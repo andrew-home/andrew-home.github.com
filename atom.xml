@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Andrew's Blog]]></title>
-  <link href="http://www.andrew-home.com/atom.xml" rel="self"/>
-  <link href="http://www.andrew-home.com/"/>
-  <updated>2014-02-08T16:51:59+08:00</updated>
-  <id>http://www.andrew-home.com/</id>
+  <link href="http://andrew-home.github.com/atom.xml" rel="self"/>
+  <link href="http://andrew-home.github.com/"/>
+  <updated>2014-02-08T17:03:08+08:00</updated>
+  <id>http://andrew-home.github.com/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
     <email><![CDATA[gzdujunchao@gmail.com]]></email>
@@ -16,10 +16,10 @@
   <entry>
     
     <title type="html"><![CDATA[hello world]]></title>
-    <link href="http://www.andrew-home.com/blog/2014/02/08/hello-world/"/>
+    <link href="http://andrew-home.github.com/blog/2014/02/08/hello-world/"/>
     
     <updated>2014-02-08T03:38:02+08:00</updated>
-    <id>http://www.andrew-home.com/blog/2014/02/08/hello-world</id>
+    <id>http://andrew-home.github.com/blog/2014/02/08/hello-world</id>
     
     <content type="html"><![CDATA[<p>Wa hahaha</p>
 ]]></content>
