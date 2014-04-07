@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>使用git subtree 管理博客主题 - Andrew's Blog</title>
+  <title>使用git subtree管理本博客 - Andrew's Blog</title>
   <meta name="author" content="Andrew">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andrew-home.github.io/blog/2014/02/15/shi-yong-git-subtree-guan-li-bo-ke-zhu-ti/">
+  <link rel="canonical" href="http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -95,7 +95,7 @@ $(document).bind('DOMNodeInserted', function(event) {
   <header>
     
       
-        <h1 class="entry-title">使用git Subtree 管理博客主题</h1>
+        <h1 class="entry-title">使用git Subtree管理本博客</h1>
       
     
     
@@ -112,7 +112,7 @@ $(document).bind('DOMNodeInserted', function(event) {
   
 
 
-<time datetime="2014-02-15T16:32:31+08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2014</time>
+<time datetime="2014-04-07T16:49:18+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
         
       </p>
     
@@ -123,7 +123,7 @@ $(document).bind('DOMNodeInserted', function(event) {
 
 <p>以下是本博客源码的目录结构</p>
 
-<figure class='code'><figcaption>blog-source</figcaption><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div><div data-line='12' class='line-number'></div><div data-line='13' class='line-number'></div><div data-line='14' class='line-number marked start'></div><div data-line='15' class='line-number marked end'></div><div data-line='16' class='line-number'></div></pre></td><td class='main  plain'><pre><div class='line'>blog-source
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>blog-source
 </div><div class='line'>├── CHANGELOG.markdown
 </div><div class='line'>├── Gemfile
 </div><div class='line'>├── Gemfile.lock
@@ -143,14 +143,14 @@ $(document).bind('DOMNodeInserted', function(event) {
 
 <p>theme 是另外一个repo，用于维护博客样式的变更，采用subtree的形式包含在blog-source这个repo里。在第一次添加theme子目录时，用的命令如下：</p>
 
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number marked start end'></div></pre></td><td class='main  plain'><pre><div class='line'>语法：git remote add -f &lt;子仓库名> &lt;子仓库地址>
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>语法：git remote add -f &lt;子仓库名> &lt;子仓库地址>
 </div><div class='line'>解释：其中-f意思是在添加远程仓库之后，立即执行fetch。
 </div><div class='line marked start end'>git remote add -f theme git@github.com:andrew-home/octopress-theme.git</div></pre></td></tr></table></div></figure>
 
 
 
 
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number marked start end'></div></pre></td><td class='main  plain'><pre><div class='line'>语法：git subtree add --prefix=&lt;子目录名> &lt;子仓库名> &lt;分支> --squash
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>语法：git subtree add --prefix=&lt;子目录名> &lt;子仓库名> &lt;分支> --squash
 </div><div class='line'>解释：--squash意思是把subtree的改动合并成一次commit，这样就不用拉取子项目完整的历史记录。--prefix之后的=等号也可以用空格。
 </div><div class='line marked start end'>git subtree add --prefix=theme theme fortheme --squash</div></pre></td></tr></table></div></figure>
 
@@ -161,13 +161,13 @@ $(document).bind('DOMNodeInserted', function(event) {
 
 <p>更新样式时，先切换到fortheme分支，修改完theme目录下代码之后，再切换到master分支（因为fortheme分支没有文章目录，看不到效果），在master分支下review完效果后，再切换回fortheme分支，git commit提交，然后用以下命令push提交到远程</p>
 
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number marked start end'></div></pre></td><td class='main  plain'><pre><div class='line'>语法：git subtree push --prefix=&lt;子目录名> &lt;远程分支名> 分支
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>语法：git subtree push --prefix=&lt;子目录名> &lt;远程分支名> 分支
 </div><div class='line marked start end'>git subtree push --prefix=theme theme master</div></pre></td></tr></table></div></figure>
 
 
 <p>最后切换回master分支，用以下命令合并修改、提交</p>
 
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div></pre></td><td class='main  plain'><pre><div class='line'>git merge fortheme --squash
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>git merge fortheme --squash
 </div><div class='line'>git push origin master</div></pre></td></tr></table></div></figure>
 
 
@@ -181,14 +181,14 @@ $(document).bind('DOMNodeInserted', function(event) {
 <p>使用这种pull request，是把它check out到本地的一个新分支，然后再merge到master实现。
 首先将.git/config里的octobpress源取消注释</p>
 
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div></pre></td><td class='main  plain'><pre><div class='line'>[remote "octopress"]
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>[remote "octopress"]
 </div><div class='line'>   url = git://github.com/imathis/octopress.git
 </div><div class='line'>   fetch = +refs/heads/*:refs/remotes/origin/*</div></pre></td></tr></table></div></figure>
 
 
 <p>然后fetch这个pr</p>
 
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number marked start end'></div></pre></td><td class='main  plain'><pre><div class='line'>语法：git fetch &lt;远程仓库名> refs/pull/&lt;pull request序号>/head:&lt;本地分支名>
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>语法：git fetch &lt;远程仓库名> refs/pull/&lt;pull request序号>/head:&lt;本地分支名>
 </div><div class='line marked start end'>git fetch octopress refs/pull/1485/head:update</div></pre></td></tr></table></div></figure>
 
 
@@ -196,7 +196,7 @@ $(document).bind('DOMNodeInserted', function(event) {
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/02/15/shi-yong-git-subtree-guan-li-bo-ke-zhu-ti/'>http://andrew-home.github.io/blog/2014/02/15/shi-yong-git-subtree-guan-li-bo-ke-zhu-ti/</a><br/>
+            <a href='http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/'>http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/</a><br/>
             </p>
 
 </div>
@@ -221,7 +221,7 @@ $(document).bind('DOMNodeInserted', function(event) {
   
 
 
-<time datetime="2014-02-15T16:32:31+08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2014</time>
+<time datetime="2014-04-07T16:49:18+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
       
 
 <span class="categories">
@@ -242,10 +242,8 @@ $(document).bind('DOMNodeInserted', function(event) {
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/02/08/zhong-wen-biao-ti/" title="Previous Post: 中文标题">&laquo; 中文标题</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/" title="Previous Post: Apache配置文件中的deny和allow的使用">&laquo; Apache配置文件中的deny和allow的使用</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/" title="Next Post: Apache配置文件中的deny和allow的使用">Apache配置文件中的deny和allow的使用 &raquo;</a>
       
     </p>
   </footer>
@@ -269,11 +267,11 @@ $(document).bind('DOMNodeInserted', function(event) {
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/">Apache配置文件中的deny和allow的使用</a>
+        <a href="/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/">使用git Subtree管理本博客</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2014/02/15/shi-yong-git-subtree-guan-li-bo-ke-zhu-ti/">使用git Subtree 管理博客主题</a>
+        <a href="/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/">Apache配置文件中的deny和allow的使用</a>
       </li>
     
       <li class="post">

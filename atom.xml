@@ -4,7 +4,7 @@
   <title><![CDATA[Andrew's Blog]]></title>
   <link href="http://andrew-home.github.io/atom.xml" rel="self"/>
   <link href="http://andrew-home.github.io/"/>
-  <updated>2014-04-07T16:03:54+08:00</updated>
+  <updated>2014-04-07T17:54:03+08:00</updated>
   <id>http://andrew-home.github.io/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
@@ -12,6 +12,94 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用git subtree管理本博客]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/"/>
+    <updated>2014-04-07T16:49:18+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke</id>
+    <content type="html"><![CDATA[<h1>背景</h1>
+
+<p>以下是本博客源码的目录结构</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>blog-source
+</div><div class='line'>├── CHANGELOG.markdown
+</div><div class='line'>├── Gemfile
+</div><div class='line'>├── Gemfile.lock
+</div><div class='line'>├── README.markdown
+</div><div class='line'>├── README.md
+</div><div class='line'>├── Rakefile
+</div><div class='line'>├── _config.yml
+</div><div class='line'>├── _deploy
+</div><div class='line'>├── config.rb
+</div><div class='line'>├── config.ru
+</div><div class='line'>├── plugins
+</div><div class='line'>├── public
+</div><div class='line marked start'>├── sass -> theme/sass
+</div><div class='line marked end'>├── source -> theme/source
+</div><div class='line'>└── theme</div></pre></td></tr></table></div></figure>
+
+
+<p>theme 是另外一个repo，用于维护博客样式的变更，采用subtree的形式包含在blog-source这个repo里。在第一次添加theme子目录时，用的命令如下：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>语法：git remote add -f &lt;子仓库名> &lt;子仓库地址>
+</div><div class='line'>解释：其中-f意思是在添加远程仓库之后，立即执行fetch。
+</div><div class='line marked start end'>git remote add -f theme git@github.com:andrew-home/octopress-theme.git</div></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>语法：git subtree add --prefix=&lt;子目录名> &lt;子仓库名> &lt;分支> --squash
+</div><div class='line'>解释：--squash意思是把subtree的改动合并成一次commit，这样就不用拉取子项目完整的历史记录。--prefix之后的=等号也可以用空格。
+</div><div class='line marked start end'>git subtree add --prefix=theme theme fortheme --squash</div></pre></td></tr></table></div></figure>
+
+
+<h1>样式更新</h1>
+
+<p>由于文章目录是位于source之下，而source又属于主题，为了不让主题这个repo不含有文章目录，所以新建了个fortheme分支，这个分支的source目录下是不含有_posts目录的。</p>
+
+<p>更新样式时，先切换到fortheme分支，修改完theme目录下代码之后，再切换到master分支（因为fortheme分支没有文章目录，看不到效果），在master分支下review完效果后，再切换回fortheme分支，git commit提交，然后用以下命令push提交到远程</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>语法：git subtree push --prefix=&lt;子目录名> &lt;远程分支名> 分支
+</div><div class='line marked start end'>git subtree push --prefix=theme theme master</div></pre></td></tr></table></div></figure>
+
+
+<p>最后切换回master分支，用以下命令合并修改、提交</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>git merge fortheme --squash
+</div><div class='line'>git push origin master</div></pre></td></tr></table></div></figure>
+
+
+<h1>octopress 代码更新</h1>
+
+<p>如果有人修改了octopress的代码，提交了pull request，比如以下这个：
+<a href="https://github.com/imathis/octopress/pull/1485">https://github.com/imathis/octopress/pull/1485</a></p>
+
+<p>此修改使得octopress 2.0(master)版本也能用上代码渲染时的linenos，start，mark选项。</p>
+
+<p>使用这种pull request，是把它check out到本地的一个新分支，然后再merge到master实现。
+首先将.git/config里的octobpress源取消注释</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>[remote "octopress"]
+</div><div class='line'>   url = git://github.com/imathis/octopress.git
+</div><div class='line'>   fetch = +refs/heads/*:refs/remotes/origin/*</div></pre></td></tr></table></div></figure>
+
+
+<p>然后fetch这个pr</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>语法：git fetch &lt;远程仓库名> refs/pull/&lt;pull request序号>/head:&lt;本地分支名>
+</div><div class='line marked start end'>git fetch octopress refs/pull/1485/head:update</div></pre></td></tr></table></div></figure>
+
+
+<p>上述命令会在本地新建一个分支来保存pr的代码，然后就可以merge到master来应用pr了。</p>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/'>http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Apache配置文件中的deny和allow的使用]]></title>
@@ -22,7 +110,7 @@
 
 <p>我们来看下下面的apache的一个配置，具体代码如下：</p>
 
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div></pre></td><td class='main  plain'><pre><div class='line'>&lt;Directory "D:/TRS/Apache2.2.17/cgi-bin">
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>&lt;Directory "D:/TRS/Apache2.2.17/cgi-bin">
 </div><div class='line'>    Order allow,deny  #1
 </div><div class='line'>    Allow from all #2
 </div><div class='line'>    deny from 192.9.200.69 #3
@@ -54,7 +142,7 @@ Order allow,deny ，这句话的作用是配置allow和deny的顺序，默认只
 </ol>
 
 
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number marked start end'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div></pre></td><td class='main  plain'><pre><div class='line'>&lt;Directory "D:/TRS/Apache2.2.17/cgi-bin">
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number marked start end'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div></pre></td><td class='main  plain'><pre><div class='line'>&lt;Directory "D:/TRS/Apache2.2.17/cgi-bin">
 </div><div class='line'>   Order deny,allow #1.默认允许全部请求
 </div><div class='line marked start end'>Allow from 192.9.200.69 #3.重叠，允许IP192.9.200.69的请求
 </div><div class='line'>deny from all #2.按照顺序，先判断deny规则，拒绝所有请求
@@ -105,94 +193,6 @@ Allow from all #2.顺序，允许所有请求
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[使用git subtree 管理博客主题]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/02/15/shi-yong-git-subtree-guan-li-bo-ke-zhu-ti/"/>
-    <updated>2014-02-15T16:32:31+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/02/15/shi-yong-git-subtree-guan-li-bo-ke-zhu-ti</id>
-    <content type="html"><![CDATA[<h1>背景</h1>
-
-<p>以下是本博客源码的目录结构</p>
-
-<figure class='code'><figcaption>blog-source</figcaption><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div><div data-line='12' class='line-number'></div><div data-line='13' class='line-number'></div><div data-line='14' class='line-number marked start'></div><div data-line='15' class='line-number marked end'></div><div data-line='16' class='line-number'></div></pre></td><td class='main  plain'><pre><div class='line'>blog-source
-</div><div class='line'>├── CHANGELOG.markdown
-</div><div class='line'>├── Gemfile
-</div><div class='line'>├── Gemfile.lock
-</div><div class='line'>├── README.markdown
-</div><div class='line'>├── README.md
-</div><div class='line'>├── Rakefile
-</div><div class='line'>├── _config.yml
-</div><div class='line'>├── _deploy
-</div><div class='line'>├── config.rb
-</div><div class='line'>├── config.ru
-</div><div class='line'>├── plugins
-</div><div class='line'>├── public
-</div><div class='line marked start'>├── sass -> theme/sass
-</div><div class='line marked end'>├── source -> theme/source
-</div><div class='line'>└── theme</div></pre></td></tr></table></div></figure>
-
-
-<p>theme 是另外一个repo，用于维护博客样式的变更，采用subtree的形式包含在blog-source这个repo里。在第一次添加theme子目录时，用的命令如下：</p>
-
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number marked start end'></div></pre></td><td class='main  plain'><pre><div class='line'>语法：git remote add -f &lt;子仓库名> &lt;子仓库地址>
-</div><div class='line'>解释：其中-f意思是在添加远程仓库之后，立即执行fetch。
-</div><div class='line marked start end'>git remote add -f theme git@github.com:andrew-home/octopress-theme.git</div></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number marked start end'></div></pre></td><td class='main  plain'><pre><div class='line'>语法：git subtree add --prefix=&lt;子目录名> &lt;子仓库名> &lt;分支> --squash
-</div><div class='line'>解释：--squash意思是把subtree的改动合并成一次commit，这样就不用拉取子项目完整的历史记录。--prefix之后的=等号也可以用空格。
-</div><div class='line marked start end'>git subtree add --prefix=theme theme fortheme --squash</div></pre></td></tr></table></div></figure>
-
-
-<h1>样式更新</h1>
-
-<p>由于文章目录是位于source之下，而source又属于主题，为了不让主题这个repo不含有文章目录，所以新建了个fortheme分支，这个分支的source目录下是不含有_posts目录的。</p>
-
-<p>更新样式时，先切换到fortheme分支，修改完theme目录下代码之后，再切换到master分支（因为fortheme分支没有文章目录，看不到效果），在master分支下review完效果后，再切换回fortheme分支，git commit提交，然后用以下命令push提交到远程</p>
-
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number marked start end'></div></pre></td><td class='main  plain'><pre><div class='line'>语法：git subtree push --prefix=&lt;子目录名> &lt;远程分支名> 分支
-</div><div class='line marked start end'>git subtree push --prefix=theme theme master</div></pre></td></tr></table></div></figure>
-
-
-<p>最后切换回master分支，用以下命令合并修改、提交</p>
-
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div></pre></td><td class='main  plain'><pre><div class='line'>git merge fortheme --squash
-</div><div class='line'>git push origin master</div></pre></td></tr></table></div></figure>
-
-
-<h1>octopress 代码更新</h1>
-
-<p>如果有人修改了octopress的代码，提交了pull request，比如以下这个：
-<a href="https://github.com/imathis/octopress/pull/1485">https://github.com/imathis/octopress/pull/1485</a></p>
-
-<p>此修改使得octopress 2.0(master)版本也能用上代码渲染时的linenos，start，mark选项。</p>
-
-<p>使用这种pull request，是把它check out到本地的一个新分支，然后再merge到master实现。
-首先将.git/config里的octobpress源取消注释</p>
-
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div></pre></td><td class='main  plain'><pre><div class='line'>[remote "octopress"]
-</div><div class='line'>   url = git://github.com/imathis/octopress.git
-</div><div class='line'>   fetch = +refs/heads/*:refs/remotes/origin/*</div></pre></td></tr></table></div></figure>
-
-
-<p>然后fetch这个pr</p>
-
-<figure class='code'><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number marked start end'></div></pre></td><td class='main  plain'><pre><div class='line'>语法：git fetch &lt;远程仓库名> refs/pull/&lt;pull request序号>/head:&lt;本地分支名>
-</div><div class='line marked start end'>git fetch octopress refs/pull/1485/head:update</div></pre></td></tr></table></div></figure>
-
-
-<p>上述命令会在本地新建一个分支来保存pr的代码，然后就可以merge到master来应用pr了。</p>
-
-<p class='post-footer'>
-            本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/02/15/shi-yong-git-subtree-guan-li-bo-ke-zhu-ti/'>http://andrew-home.github.io/blog/2014/02/15/shi-yong-git-subtree-guan-li-bo-ke-zhu-ti/</a><br/>
-            </p>
-
-]]></content>
-  </entry>
-  
-  <entry>
     <title type="html"><![CDATA[中文标题]]></title>
     <link href="http://andrew-home.github.io/blog/2014/02/08/zhong-wen-biao-ti/"/>
     <updated>2014-02-08T20:39:27+08:00</updated>
@@ -223,7 +223,7 @@ Allow from all #2.顺序，允许所有请求
     <id>http://andrew-home.github.io/blog/2014/02/08/hello-world</id>
     <content type="html"><![CDATA[<p>Wa hahaha</p>
 
-<figure class='code'><figcaption>Discover if a number is prime </figcaption><div class='highlight'><table><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div></pre></td><td class='main  ruby'><pre><div class='line'> <span class="k">class</span> <span class="nc">Fixnum</span>
+<figure class='code'><figcaption>Discover if a number is prime </figcaption><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered ruby'><pre><div class='line'> <span class="k">class</span> <span class="nc">Fixnum</span>
 </div><div class='line'>   <span class="k">def</span> <span class="nf">prime?</span>
 </div><div class='line'>     <span class="p">(</span><span class="s1">&#39;1&#39;</span> <span class="o">*</span> <span class="nb">self</span><span class="p">)</span> <span class="o">!~</span> <span class="sr">/^1?$|^(11+?)\1+$/</span>
 </div><div class='line'>   <span class="k">end</span>

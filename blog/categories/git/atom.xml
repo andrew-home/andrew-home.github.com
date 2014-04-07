@@ -4,7 +4,7 @@
   <title><![CDATA[Category: git | Andrew's Blog]]></title>
   <link href="http://andrew-home.github.io/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://andrew-home.github.io/"/>
-  <updated>2014-04-07T16:03:54+08:00</updated>
+  <updated>2014-04-07T17:54:03+08:00</updated>
   <id>http://andrew-home.github.io/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
@@ -14,15 +14,15 @@
 
   
   <entry>
-    <title type="html"><![CDATA[使用git subtree 管理博客主题]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/02/15/shi-yong-git-subtree-guan-li-bo-ke-zhu-ti/"/>
-    <updated>2014-02-15T16:32:31+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/02/15/shi-yong-git-subtree-guan-li-bo-ke-zhu-ti</id>
+    <title type="html"><![CDATA[使用git subtree管理本博客]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/"/>
+    <updated>2014-04-07T16:49:18+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke</id>
     <content type="html"><![CDATA[<h1>背景</h1>
 
 <p>以下是本博客源码的目录结构</p>
 
-<p><code>plain blog-source linenos:false mark:14-15
+<p><code>mark:14-15
 blog-source
 ├── CHANGELOG.markdown
 ├── Gemfile
