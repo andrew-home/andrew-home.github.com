@@ -4,7 +4,7 @@
   <title><![CDATA[Category: git | Andrew's Blog]]></title>
   <link href="http://andrew-home.github.io/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://andrew-home.github.io/"/>
-  <updated>2014-04-07T00:32:38+08:00</updated>
+  <updated>2014-04-07T16:03:54+08:00</updated>
   <id>http://andrew-home.github.io/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
@@ -22,7 +22,7 @@
 
 <p>以下是本博客源码的目录结构</p>
 
-<p><code>plain blog-source mark:14-15
+<p><code>plain blog-source linenos:false mark:14-15
 blog-source
 ├── CHANGELOG.markdown
 ├── Gemfile
