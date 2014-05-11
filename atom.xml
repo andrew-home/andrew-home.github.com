@@ -4,7 +4,7 @@
   <title><![CDATA[Andrew's Blog]]></title>
   <link href="http://andrew-home.github.io/atom.xml" rel="self"/>
   <link href="http://andrew-home.github.io/"/>
-  <updated>2014-04-07T17:54:03+08:00</updated>
+  <updated>2014-05-11T23:24:44+08:00</updated>
   <id>http://andrew-home.github.io/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
@@ -12,6 +12,884 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[gre tunnel搭建]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian/"/>
+    <updated>2014-05-11T23:00:00+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian</id>
+    <content type="html"><![CDATA[<p> 客户端（client）与服务器A在同一个运营商网络，应用部署在服务器B，服务器A 、B之间建立tunnel，A设置dnat，client通过访问A的8000端口来访问服务器B，B返回的响应通过tunnel到达A，A再返回给client。在dnat之上使用tunnel的原因是通过tunnel后，B接收到的请求源IP为client，而不是A。</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'> </div><div class='line'>+----------+          +------------------------+                +------------------------+
+</div><div class='line'>|          |          |                        |     tunnel     |                        |
+</div><div class='line'>|  client  +--------> |       server A         | &lt;------------> |       server B         |
+</div><div class='line'>|          |          |                        |                |                        |
+</div><div class='line'>|          |          +------------------------+                +------------------------+
+</div><div class='line'>|          |          |                        |                |                        |
+</div><div class='line'>+----------+          | ip:192.168.1.1         |                | ip:192.168.2.2         |
+</div><div class='line'>                      |                        |                |                        |
+</div><div class='line'>                      | tunnel_ip:10.111.111.1 |                | tunnel_ip:10.111.111.2 |
+</div><div class='line'>                      |                        |                |                        |
+</div><div class='line'>                      +------------------------+                +------------------------+
+</div><div class='line'> </div></pre></td></tr></table></div></figure>
+
+
+<h2>在A(linux) 搭建 gre tunnel过程</h2>
+
+<ol>
+<li><p>创建gre tunnel：</p>
+
+<pre><code> /sbin/modprobe ip_gre
+ /sbin/iptunnel add tun0 mode gre remote 192.168.2.2 local 192.168.1.1
+ /sbin/ifconfig tun0 10.111.111.1
+ /sbin/route add 10.111.111.2 tun0
+</code></pre></li>
+<li><p>设置iptables规则：</p>
+
+<pre><code> #这个规则很重要，某些特殊的网络会影响mtu的协商，所以要用这个规则来指写mtu
+ /sbin/iptables -t mangle -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+
+ #到apache端口的映射
+ /sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 8000 -j DNAT --to-destination 10.111.111.2:8000 
+
+ #SNAT规则
+ /sbin/iptables -t nat -A POSTROUTING -o eth0 -p tcp -j SNAT --to-source 192.168.1.1 
+</code></pre></li>
+</ol>
+
+
+<h2>当B是bsd时，在B搭建 gre tunnel过程：</h2>
+
+<ol>
+<li><p>BSD 6.2的默认内核不支持ipfw的forward功能，需要重编一下kernel。找一个默认的SMP配置文件，在最后加上</p>
+
+<pre><code> options IPFIREWALL
+ options IPDIVERT
+ options IPFIREWALL_DEFAULT_TO_ACCEPT
+ options IPFIREWALL_VERBOSE
+ options IPFIREWALL_VERBOSE_LIMIT=10
+ options IPFIREWALL_FORWARD
+ options DUMMYNET
+</code></pre>
+
+<p> 编译内核重启（或者直接找一个编译好的来用）</p></li>
+<li><p>做一个到napt服务器的tunnel。在BSD 4.x下，ipip tunnel工作良好，但在6.2下会有一些古怪的问题，小包通讯正常，大包就无法通过，因此要改用gre tunnel。通过下面的命令来创建tunnel，同时可以把这些命令写到/etc/rc.local，服务器启动的时候自动创建：</p>
+
+<pre><code> /sbin/ifconfig gre0 create
+ /sbin/ifconfig gre0 tunnel 192.168.2.2 192.168.1.1
+ /sbin/ifconfig gre0 10.111.111.2/32 10.111.111.1
+</code></pre></li>
+<li><p>做转发规则。实现类似linux下ip route的功能，将从10.111.111.2发出的包，都转发给tunnel另一端的napt服务器。</p>
+
+<pre><code> /sbin/ipfw add 100 fwd 10.111.111.1 ip from 10.111.111.2 to any
+</code></pre>
+
+<p> 也可以使用ipf来实现源地址路由的功能（不用重新编译内核）</p>
+
+<ol>
+<li><p>创建tunnel跟上面的第2步一样</p></li>
+<li><p>在ipf的rule文件添加规则：</p>
+
+<pre><code> pass out quick on bge0 to gre0:10.111.111.2 from 10.111.111.1 to any
+</code></pre>
+
+<p> 然后<code>/etc/rc.d/ipfilter restart</code>即可</p></li>
+</ol>
+</li>
+</ol>
+
+
+<h2>当B是linux时，在B搭建 gre tunnel过程：</h2>
+
+<ol>
+<li><p>装一个iproute的包，修改/etc/iproute2/rt_tables，添加自定义的table</p>
+
+<pre><code> 201 mytunnel
+</code></pre></li>
+<li><p>做一条tunnel，步骤不再重复，假设得到tun0</p></li>
+<li><p>添加ip route规则</p>
+
+<pre><code> #设置mytunnel表的默认路由，都指到tun0 
+ /sbin/ip route add default dev tun0 table mytunnel mtu 1400
+
+ #添加一个规则，让所有从10.111.111.2发出的包都到mytunnel表里面去找路由
+ /sbin/ip rule add from 10.111.111.2 table mytunnel
+</code></pre></li>
+</ol>
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian/'>http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ssh登陆失败]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai/"/>
+    <updated>2014-05-11T22:56:26+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai</id>
+    <content type="html"><![CDATA[<p>用ssh key登陆不上某台机A的某个账号xy1，查看A的/var/log/messages，看到有这么句：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>User xy1 not allowed because account is locked </div></pre></td></tr></table></div></figure>
+
+
+<p>原因是该账号没设密码，被锁住了，用以下命令解决：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>passwd -u xy1
+</div><div class='line'>usermod -p -u xy1 </div></pre></td></tr></table></div></figure>
+
+
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai/'>http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ssh 安装笔记]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji/"/>
+    <updated>2014-05-11T22:52:32+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji</id>
+    <content type="html"><![CDATA[<p>debian 6.0 的一台32位机器，使用<code>aptitude search openssh-server-x509</code>没结果（其他机同样源配置是有结果的），于是上内部源下载openssh-server-x509.deb，安装过程如下：</p>
+
+<ul>
+<li><p>彻底删除之前安装失败的包及残留配置文件(用aptitude remove &mdash;purge不够彻底，安装时会报错）</p>
+
+<pre><code>  dpkg -P openssh-server-x509
+</code></pre></li>
+<li><p>检查是否删除干净</p>
+
+<pre><code>  dpkg -s openssh-server-x509
+</code></pre></li>
+<li><p>安装新包</p>
+
+<pre><code>  dpkg -i openssh-server-x509.deb 
+</code></pre></li>
+</ul>
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji/'>http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[在64位的linux上运行32位的程序]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/"/>
+    <updated>2014-05-11T22:49:25+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>症状</p>
+
+<ul>
+<li>执行bin文件时提示：No such file or directory</li>
+<li>ldd bin文件  的输出为： not a dynamic executable</li>
+<li>file bin文件 的输出显示程序是32位</li>
+</ul>
+</li>
+<li><p>解决</p>
+
+<p> debian上只要安装 ia32-libs这个包（apt-get install ia32-libs)就可以了。</p></li>
+</ol>
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/'>http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[debian下mysql主从配置]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/"/>
+    <updated>2014-05-11T22:44:26+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>确保master/slave只有一份/etc/mysql/my.cnf , 不要在其他地方再有my.cnf （如/etc/my.cnf  /usr/local之类）</p></li>
+<li><p>配置文件</p>
+
+<p> master配置：</p>
+
+<p> 在[mysqld]节点下添加：</p>
+
+<pre><code> server-id=1
+</code></pre>
+
+<p> slave配置：</p>
+
+<p> 在[mysqld]节点下添加：</p>
+
+<pre><code> server-id=2
+ relay-log = /home/mysql/logs/mysqld-relay-bin
+ relay-log-index = /home/mysql/logs/mysqld-relay-bin.index
+ replicate-ignore-db=mysql
+ replicate-ignore-db=test
+</code></pre></li>
+<li><p>先后重启master、slave的mysql： /etc/init.d/mysql restart</p></li>
+<li><p>在master上用root登陆mysql: mysql -uroot -p</p></li>
+<li><p>master上锁表：</p>
+
+<pre><code> mysql&gt; flush tables with read lock;
+</code></pre></li>
+<li><p>show master status; 记录binlog的名字和位置</p></li>
+<li><p>slave是登陆mysql，然后：</p>
+
+<pre><code> mysql&gt; slave stop;
+ mysql&gt; CHANGE MASTER TO MASTER_HOST='X.X.X.X',MASTER_USER='slave',MASTER_PASSWORD='fai',MASTER_LOG_FILE='mysqld-bin.000015',MASTER_LOG_POS=106;
+ mysql&gt; slave start;
+ mysql&gt; show slave status\G;
+</code></pre></li>
+<li><p>master上解锁：</p>
+
+<pre><code> mysql&gt; unlock tables;
+</code></pre></li>
+</ol>
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/'>http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[awk程序介绍]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/awkcheng-xu-jie-shao/"/>
+    <updated>2014-04-07T22:22:31+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/awkcheng-xu-jie-shao</id>
+    <content type="html"><![CDATA[<p><a href="http://andrew-home.github.io/files/%E4%B8%AD%E7%A0%94%E9%99%A2%E8%AE%A1%E7%AE%97%E4%B8%AD%E5%BF%83ASPAC%E8%AE%A1%E5%88%92%E4%B9%8Bawk%E7%A8%8B%E5%BA%8F%E4%BB%8B%E7%BB%8D.pdf">中研院计算中心ASPAC计划之awk程序介绍.PDF</a></p>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/awkcheng-xu-jie-shao/'>http://andrew-home.github.io/blog/2014/04/07/awkcheng-xu-jie-shao/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[awk调用shell命令的两种方法system与print]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/"/>
+    <updated>2014-04-07T22:07:27+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print</id>
+    <content type="html"><![CDATA[<p>awk获取执行shell命令后的结果：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>awk 'BEGIN{
+</div><div class='line'>　　i=1;while(i&lt;=5){
+</div><div class='line'>　　　　system("date > date.tmp")
+</div><div class='line'>　　　　getline &lt; "date.tmp"
+</div><div class='line'>　　　　print $1
+</div><div class='line'>　　　　system("sleep 2")
+</div><div class='line'>　　　　close("date.tmp")
+</div><div class='line'>　　　　i++
+</div><div class='line'>　　}
+</div><div class='line'>}'</div></pre></td></tr></table></div></figure>
+
+
+<p>或者</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>awk 'BEGIN{
+</div><div class='line'>　　i=1;while(i&lt;=5){
+</div><div class='line'>　　　　system("date > date.tmp")
+</div><div class='line'>　　　　getline a&lt; "date.tmp"
+</div><div class='line'>　　　　print a
+</div><div class='line'>　　　　system("sleep 2")
+</div><div class='line'>　　　　close("date.tmp")
+</div><div class='line'>　　　　i++
+</div><div class='line'>　　}
+</div><div class='line'>}'</div></pre></td></tr></table></div></figure>
+
+
+<p>或者</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>awk 'BEGIN{
+</div><div class='line'>　　i=1;while(i&lt;=5){
+</div><div class='line'>　　　　"date" | getline
+</div><div class='line'>　　　　print $1
+</div><div class='line'>　　　　system("sleep 2")
+</div><div class='line'>　　　　close("date")
+</div><div class='line'>　　　　i++
+</div><div class='line'>　　}
+</div><div class='line'>}'</div></pre></td></tr></table></div></figure>
+
+
+<p>注意：close(&ldquo;date.tmp&rdquo;)或close(&ldquo;date&rdquo;)一句必不可少，否则每次循环从管道拿到的都是已经打开的文件或命令的数据</p>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/'>http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[awk 读取 shell 变量的方法]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/"/>
+    <updated>2014-04-07T22:02:41+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>在awk中用&#8221;&lsquo;$var&rsquo;&#8221;</p>
+
+<pre><code> #!/bin/bash
+
+ var=test
+ awk 'BEGIN { print "'$var'" }' 
+</code></pre>
+
+<p> 如果var有空格、转义字符等特殊字符，最好在$var外再用一个双引号括住： <code>"'"$var"'"</code></p></li>
+<li><p>awk -v awk中的变量名= shell中的变量名</p>
+
+<pre><code> #!/bin/bash
+
+ varS=test
+ awk -v varA="$varS"  'BEGIN { print  varA}' 
+</code></pre></li>
+</ol>
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/'>http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[awk数字比较]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/awkshu-zi-bi-jiao/"/>
+    <updated>2014-04-07T21:57:27+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/awkshu-zi-bi-jiao</id>
+    <content type="html"><![CDATA[<h1>自动转换</h1>
+
+<p>awk中的变量是数字还是字符串会根据上下文转换，如：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div><div data-line='12' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$vi</span> test.sh
+</div><div class='line'> </div><div class='line'><span class="c">#!/bin/bash</span>
+</div><div class='line'> </div><div class='line'><span class="nv">aS</span><span class="o">=</span><span class="nv">$1</span>
+</div><div class='line'><span class="nv">bS</span><span class="o">=</span><span class="nv">$2</span>
+</div><div class='line'> </div><div class='line'>awk <span class="s1">&#39;BEGIN {</span>
+</div><div class='line'><span class="s1">    aA=&quot;&#39;</span><span class="nv">$aS</span><span class="s1">&#39;&quot;</span>
+</div><div class='line'><span class="s1">    bA=&quot;&#39;</span><span class="nv">$bS</span><span class="s1">&#39;&quot;</span>
+</div><div class='line'><span class="s1">    if (aA&gt;bA) { print  aA+bA &quot;bigger&quot; }</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div></pre></td></tr></table></div></figure>
+
+
+<p>在命令行输入<code>test.sh 4 100</code>,会显示：</p>
+
+<pre><code>104  bigger
+</code></pre>
+
+<p>原因是计算四则运算时，awk将其转换为数字，但比较时转换为字符串比较了</p>
+
+<h1>解决方法</h1>
+
+<p>变量需要转换为数字使用时，手动加0：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="c">#!/bin/bash</span>
+</div><div class='line'> </div><div class='line'><span class="nv">aS</span><span class="o">=</span><span class="nv">$1</span>
+</div><div class='line'><span class="nv">bS</span><span class="o">=</span><span class="nv">$2</span>
+</div><div class='line'> </div><div class='line'>awk <span class="s1">&#39;BEGIN {</span>
+</div><div class='line'><span class="s1">    aA=&quot;&#39;</span><span class="nv">$aS</span><span class="s1">&#39;&quot;+0</span>
+</div><div class='line'><span class="s1">    bA=&quot;&#39;</span><span class="nv">$bS</span><span class="s1">&#39;&quot;+0</span>
+</div><div class='line'><span class="s1">    if (aA&gt;bA) { print  aA+bA &quot;bigger&quot; }</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div></pre></td></tr></table></div></figure>
+
+
+<p>直接比较改为变量相减后的结果与0比较：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="c">#!/bin/bash</span>
+</div><div class='line'> </div><div class='line'><span class="nv">aS</span><span class="o">=</span><span class="nv">$1</span>
+</div><div class='line'><span class="nv">bS</span><span class="o">=</span><span class="nv">$2</span>
+</div><div class='line'> </div><div class='line'>awk <span class="s1">&#39;BEGIN {</span>
+</div><div class='line'><span class="s1">    aA=&quot;&#39;</span><span class="nv">$aS</span><span class="s1">&#39;&quot;</span>
+</div><div class='line'><span class="s1">    bA=&quot;&#39;</span><span class="nv">$bS</span><span class="s1">&#39;&quot;</span>
+</div><div class='line'><span class="s1">    if (aA-bA&gt;0) { print  aA+bA &quot;bigger&quot; }</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div></pre></td></tr></table></div></figure>
+
+
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/awkshu-zi-bi-jiao/'>http://andrew-home.github.io/blog/2014/04/07/awkshu-zi-bi-jiao/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[awk数组]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/awkshu-zu/"/>
+    <updated>2014-04-07T21:55:22+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/awkshu-zu</id>
+    <content type="html"><![CDATA[<p>1.采用 for (val in Array) print Array[val] 的方法得到的遍历是无序的，即使下标val是1、2、3&hellip;.</p>
+
+<p>2.获得数组个数的方法</p>
+
+<p>split:</p>
+
+<pre><code>n=split(原字符串, 数组名, 分隔字符) print n
+</code></pre>
+
+<p>asort(排序）:</p>
+
+<pre><code>n=print asort(Array)
+</code></pre>
+
+<p>length:</p>
+
+<pre><code>n=length(Array)
+</code></pre>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/awkshu-zu/'>http://andrew-home.github.io/blog/2014/04/07/awkshu-zu/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[awk排序]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/awkpai-xu/"/>
+    <updated>2014-04-07T21:20:40+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/awkpai-xu</id>
+    <content type="html"><![CDATA[<h1>无序输出</h1>
+
+<p>由于awk数组，是关联数组。for…in循环输出时候，默认打印出来是无序数组。</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$awk</span> <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">    info = &quot;this is a test&quot;;</span>
+</div><div class='line'><span class="s1">    split(info,tA,&quot; &quot;);</span>
+</div><div class='line'><span class="s1">    for(k in tA){print k,tA[k];}</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div><div class='line'>4 <span class="nb">test</span>
+</div><div class='line'>1 this
+</div><div class='line'>2 is
+</div><div class='line'>3 a
+</div></pre></td></tr></table></div></figure>
+
+
+<h1>键值定位方式输出</h1>
+
+<p>如果需要按照顺序输出，通过键值定位方式输出。</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$awk</span> <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">    info = &quot;this is a test&quot;;</span>
+</div><div class='line'><span class="s1">    slen=split(info,tA,&quot; &quot;);</span>
+</div><div class='line'><span class="s1">    for(i=1;i&lt;=slen;i++){print i,tA[i];}</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div><div class='line'>1 this
+</div><div class='line'>2 is
+</div><div class='line'>3 a
+</div><div class='line'>4 <span class="nb">test</span>
+</div></pre></td></tr></table></div></figure>
+
+
+<h1>通过使用内置函数asort,asorti排序（awk 3.1以上版本才支持）</h1>
+
+<h2>asort</h2>
+
+<h3>使用说明</h3>
+
+<p>srcarrlen=asort[srcarr,dscarr]<br/>
+默认返回值是：原数组长度，传入参数dscarr则将排序后数组赋值给dscarr.</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$ </span>awk <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">    a[100]=100;</span>
+</div><div class='line'><span class="s1">    a[2]=224;</span>
+</div><div class='line'><span class="s1">    a[3]=34;</span>
+</div><div class='line'><span class="s1">    slen=asort(a,tA);</span>
+</div><div class='line'><span class="s1">    for(i=1;i&lt;=slen;i++)</span>
+</div><div class='line'><span class="s1">    {print i,tA[i];}</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div><div class='line'>1 34
+</div><div class='line'>2 100
+</div><div class='line'>3 224
+</div></pre></td></tr></table></div></figure>
+
+
+<p>asort只对值进行了排序，因此丢掉原先键值。</p>
+
+<h2>asorti</h2>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$awk</span> <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">    a[&quot;d&quot;]=100;</span>
+</div><div class='line'><span class="s1">    a[&quot;a&quot;]=224;</span>
+</div><div class='line'><span class="s1">    a[&quot;c&quot;]=34;</span>
+</div><div class='line'><span class="s1">    slen=asorti(a,tA);</span>
+</div><div class='line'><span class="s1">    for(i=1;i&lt;=slen;i++)</span>
+</div><div class='line'><span class="s1">    {print i,tA[i],a[tA[i]];}</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div><div class='line'>1 a 224
+</div><div class='line'>2 c 34
+</div><div class='line'>3 d 100
+</div></pre></td></tr></table></div></figure>
+
+
+<p>asorti对键值进行排序（字符串类型），将生成新的数组放入：tA中。</p>
+
+<h1>通过管道发送到sort排序</h1>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$awk</span> <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">    a[100]=100;</span>
+</div><div class='line'><span class="s1">    a[2]=224;</span>
+</div><div class='line'><span class="s1">    a[3]=34;</span>
+</div><div class='line'><span class="s1">    for(i in a)</span>
+</div><div class='line'><span class="s1">    {print i,a[i] | &quot;sort -r -n -k2&quot;;}</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div><div class='line'>2 224
+</div><div class='line'>100 100
+</div><div class='line'>3 34
+</div></pre></td></tr></table></div></figure>
+
+
+<p>通过管道，发送到外部程序“sort”排序，-r 从大到小，-n 按照数字排序，-k2 以第2列排序。通过将数据丢给第3方的sort命令，所有问题变得非常简单。如果以key值排序 –k2 变成 -k1即可。</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$ </span>awk <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">    a[100]=100;</span>
+</div><div class='line'><span class="s1">    a[2]=224;</span>
+</div><div class='line'><span class="s1">    a[3]=34;</span>
+</div><div class='line'><span class="s1">    for(i in a)</span>
+</div><div class='line'><span class="s1">    {print i,a[i] | &quot;sort -r -n -k1&quot;;}</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div><div class='line'>100 100
+</div><div class='line'>3 34
+</div><div class='line'>2 224
+</div></pre></td></tr></table></div></figure>
+
+
+<h1>自定义排序函数</h1>
+
+<h2>awk自定义函数结构</h2>
+
+<figure class='code'><figcaption>lineons:true</figcaption><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered sh'><pre><div class='line'><span class="k">function </span>funname<span class="o">(</span>p1,p2,p3<span class="o">)</span>
+</div><div class='line'><span class="o">{</span>
+</div><div class='line'>    station;
+</div><div class='line'>    <span class="k">return </span>value;
+</div><div class='line'><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+
+<p>以上是awk自定义函数表示方式，默认传入参数都是以引用方式传入，return值，只能是字符型或者数值型。 不能返回数组类型。 如果返回数组类型。需要通过形参方式传入，再获得。</p>
+
+<h2>awk返回数组类型</h2>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div><div data-line='12' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'>awk <span class="s1">&#39;function test(ary){</span>
+</div><div class='line'><span class="s1">        for(i=0;i&lt;10;i++){</span>
+</div><div class='line'><span class="s1">            ary[i]=i;</span>
+</div><div class='line'><span class="s1">        }</span>
+</div><div class='line'><span class="s1">        return i;</span>
+</div><div class='line'><span class="s1">    }</span>
+</div><div class='line'><span class="s1">    BEGIN{</span>
+</div><div class='line'><span class="s1">        n=test(array);</span>
+</div><div class='line'><span class="s1">        for(i=0;i&lt;n;i++){</span>
+</div><div class='line'><span class="s1">            print array[i];</span>
+</div><div class='line'><span class="s1">        }</span>
+</div><div class='line'><span class="s1">    }&#39;</span>
+</div></pre></td></tr></table></div></figure>
+
+
+<h2>排序函数</h2>
+
+<ul>
+<li>arr 传入一维数组</li>
+<li>key 排序类型 1是按照值排序 2按照键值</li>
+<li>datatype 比较类型 1按照数字排序 2按照字符串排序</li>
+<li>tarr 排序返回的数组</li>
+<li>splitseq 分割字符串 数组中键与值之间分割字符串</li>
+<li>return 数组长度</li>
+</ul>
+
+
+<p>实现思路，将原始数组a[‘a’]=100 排序后变成 a[1]=a分隔符100 ，然后按照下标递归显示内容。 本排序使用冒泡方式进行。</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div><div data-line='12' class='line-number'></div><div data-line='13' class='line-number'></div><div data-line='14' class='line-number'></div><div data-line='15' class='line-number'></div><div data-line='16' class='line-number'></div><div data-line='17' class='line-number'></div><div data-line='18' class='line-number'></div><div data-line='19' class='line-number'></div><div data-line='20' class='line-number'></div><div data-line='21' class='line-number'></div><div data-line='22' class='line-number'></div><div data-line='23' class='line-number'></div><div data-line='24' class='line-number'></div><div data-line='25' class='line-number'></div><div data-line='26' class='line-number'></div><div data-line='27' class='line-number'></div><div data-line='28' class='line-number'></div><div data-line='29' class='line-number'></div><div data-line='30' class='line-number'></div><div data-line='31' class='line-number'></div><div data-line='32' class='line-number'></div><div data-line='33' class='line-number'></div><div data-line='34' class='line-number'></div><div data-line='35' class='line-number'></div><div data-line='36' class='line-number'></div><div data-line='37' class='line-number'></div><div data-line='38' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="k">function </span>sortArr<span class="o">(</span>arr,key,datatype,tarr,splitseq<span class="o">)</span>
+</div><div class='line'><span class="o">{</span>
+</div><div class='line'> </div><div class='line'>    <span class="k">if</span><span class="o">(</span>key ~ /<span class="o">[</span>^1-2<span class="o">]</span>/<span class="o">)</span>
+</div><div class='line'>    <span class="o">{</span><span class="k">return </span>tarr;<span class="o">}</span>
+</div><div class='line'>    <span class="k">for</span><span class="o">(</span>k in arr<span class="o">)</span>
+</div><div class='line'>    <span class="o">{</span>
+</div><div class='line'>      tarr<span class="o">[</span>++alen<span class="o">]=(</span>k<span class="s2">&quot;&quot;</span>splitseq<span class="s2">&quot;&quot;</span>arr<span class="o">[</span>k<span class="o">])</span>;
+</div><div class='line'>    <span class="o">}</span>
+</div><div class='line'> </div><div class='line'>    <span class="k">for</span><span class="o">(</span><span class="nv">m</span><span class="o">=</span>1;m&lt;<span class="o">=</span>alen;m++<span class="o">)</span>
+</div><div class='line'>    <span class="o">{</span>
+</div><div class='line'>        <span class="k">for</span><span class="o">(</span><span class="nv">n</span><span class="o">=</span>1;n&lt;<span class="o">=</span>alen-m-1;n++<span class="o">)</span>
+</div><div class='line'>        <span class="o">{</span>
+</div><div class='line'>            split<span class="o">(</span>tarr<span class="o">[</span>m<span class="o">]</span>,tm,splitseq<span class="o">)</span>;
+</div><div class='line'>            split<span class="o">(</span>tarr<span class="o">[</span>n+1<span class="o">]</span>,tn,splitseq<span class="o">)</span>;
+</div><div class='line'> </div><div class='line'>                <span class="nv">tnum</span><span class="o">=</span>tarr<span class="o">[</span>m<span class="o">]</span>;
+</div><div class='line'>            <span class="k">if</span><span class="o">(</span><span class="nv">datatype</span><span class="o">==</span>1<span class="o">)</span>
+</div><div class='line'>            <span class="o">{</span>
+</div><div class='line'>                <span class="k">if</span><span class="o">(</span>tm<span class="o">[</span>key<span class="o">]</span>+0&lt;tn<span class="o">[</span>key<span class="o">]</span>+0<span class="o">)</span>
+</div><div class='line'>                <span class="o">{</span>
+</div><div class='line'>                     tarr<span class="o">[</span>m<span class="o">]=</span>tarr<span class="o">[</span>n+1<span class="o">]</span>;
+</div><div class='line'>                     tarr<span class="o">[</span>n+1<span class="o">]=</span>tnum;
+</div><div class='line'>                <span class="o">}</span>
+</div><div class='line'>            <span class="o">}</span>
+</div><div class='line'>            <span class="k">else</span>
+</div><div class='line'>            <span class="o">{</span>
+</div><div class='line'>                <span class="k">if</span><span class="o">((</span>tm<span class="o">[</span>key<span class="o">]</span><span class="s2">&quot;&quot;</span><span class="o">)</span> &lt; <span class="o">(</span>tn<span class="o">[</span>key<span class="o">]</span><span class="s2">&quot;&quot;</span><span class="o">))</span>
+</div><div class='line'>                <span class="o">{</span>
+</div><div class='line'>                     tarr<span class="o">[</span>m<span class="o">]=</span>tarr<span class="o">[</span>n+1<span class="o">]</span>;
+</div><div class='line'>                     tarr<span class="o">[</span>n+1<span class="o">]=</span>tnum;
+</div><div class='line'>                <span class="o">}</span>
+</div><div class='line'>            <span class="o">}</span>
+</div><div class='line'>        <span class="o">}</span>
+</div><div class='line'>    <span class="o">}</span>
+</div><div class='line'>    <span class="k">return </span>alen;
+</div><div class='line'><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+
+<p>完整代码如下：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div><div data-line='12' class='line-number'></div><div data-line='13' class='line-number'></div><div data-line='14' class='line-number'></div><div data-line='15' class='line-number'></div><div data-line='16' class='line-number'></div><div data-line='17' class='line-number'></div><div data-line='18' class='line-number'></div><div data-line='19' class='line-number'></div><div data-line='20' class='line-number'></div><div data-line='21' class='line-number'></div><div data-line='22' class='line-number'></div><div data-line='23' class='line-number'></div><div data-line='24' class='line-number'></div><div data-line='25' class='line-number'></div><div data-line='26' class='line-number'></div><div data-line='27' class='line-number'></div><div data-line='28' class='line-number'></div><div data-line='29' class='line-number'></div><div data-line='30' class='line-number'></div><div data-line='31' class='line-number'></div><div data-line='32' class='line-number'></div><div data-line='33' class='line-number'></div><div data-line='34' class='line-number'></div><div data-line='35' class='line-number'></div><div data-line='36' class='line-number'></div><div data-line='37' class='line-number'></div><div data-line='38' class='line-number'></div><div data-line='39' class='line-number'></div><div data-line='40' class='line-number'></div><div data-line='41' class='line-number'></div><div data-line='42' class='line-number'></div><div data-line='43' class='line-number'></div><div data-line='44' class='line-number'></div><div data-line='45' class='line-number'></div><div data-line='46' class='line-number'></div><div data-line='47' class='line-number'></div><div data-line='48' class='line-number'></div><div data-line='49' class='line-number'></div><div data-line='50' class='line-number'></div><div data-line='51' class='line-number'></div><div data-line='52' class='line-number'></div><div data-line='53' class='line-number'></div><div data-line='54' class='line-number'></div><div data-line='55' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$ </span>awk <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">a[&quot;a&quot;]=100;</span>
+</div><div class='line'><span class="s1">a[&quot;b&quot;]=110;</span>
+</div><div class='line'><span class="s1">a[&quot;c&quot;]=10;</span>
+</div><div class='line'><span class="s1">splitseq=&quot;%%&quot;;</span>
+</div><div class='line'><span class="s1">alen=sortArr(a,2,1,tarr,splitseq);</span>
+</div><div class='line'><span class="s1">for(m=1;m&lt;=alen;m++)</span>
+</div><div class='line'><span class="s1">{</span>
+</div><div class='line'><span class="s1">    split(tarr[m],ta,splitseq);</span>
+</div><div class='line'><span class="s1">    print m,ta[1],ta[2];</span>
+</div><div class='line'><span class="s1">}</span>
+</div><div class='line'><span class="s1">}</span>
+</div><div class='line'><span class="s1">function sortArr(arr,key,datatype,tarr,splitseq)</span>
+</div><div class='line'><span class="s1">{</span>
+</div><div class='line'> </div><div class='line'><span class="s1">    if(key ~ /[^1-2]/) </span>
+</div><div class='line'><span class="s1">    {return tarr;}</span>
+</div><div class='line'><span class="s1">    for(k in arr)</span>
+</div><div class='line'><span class="s1">    {</span>
+</div><div class='line'><span class="s1">      tarr[++alen]=(k&quot;&quot;splitseq&quot;&quot;arr[k]);</span>
+</div><div class='line'><span class="s1">    }</span>
+</div><div class='line'> </div><div class='line'><span class="s1">    for(m=1;m&lt;=alen;m++)</span>
+</div><div class='line'><span class="s1">    {</span>
+</div><div class='line'><span class="s1">        for(n=1;n&lt;=alen-m-1;n++)</span>
+</div><div class='line'><span class="s1">        {</span>
+</div><div class='line'><span class="s1">            split(tarr[m],tm,splitseq);</span>
+</div><div class='line'><span class="s1">            split(tarr[n+1],tn,splitseq);</span>
+</div><div class='line'> </div><div class='line'><span class="s1">                tnum=tarr[m];</span>
+</div><div class='line'><span class="s1">            if(datatype==1)</span>
+</div><div class='line'><span class="s1">            {</span>
+</div><div class='line'><span class="s1">                if(tm[key]+0&lt;tn[key]+0)</span>
+</div><div class='line'><span class="s1">                {</span>
+</div><div class='line'><span class="s1">                     tarr[m]=tarr[n+1];</span>
+</div><div class='line'><span class="s1">                     tarr[n+1]=tnum;</span>
+</div><div class='line'><span class="s1">                }</span>
+</div><div class='line'><span class="s1">            }</span>
+</div><div class='line'><span class="s1">            else</span>
+</div><div class='line'><span class="s1">            {</span>
+</div><div class='line'><span class="s1">                if((tm[key]&quot;&quot;) &lt; (tn[key]&quot;&quot;))</span>
+</div><div class='line'><span class="s1">                {</span>
+</div><div class='line'><span class="s1">                     tarr[m]=tarr[n+1];</span>
+</div><div class='line'><span class="s1">                     tarr[n+1]=tnum;</span>
+</div><div class='line'><span class="s1">                }</span>
+</div><div class='line'><span class="s1">            }</span>
+</div><div class='line'><span class="s1">        }</span>
+</div><div class='line'><span class="s1">    }</span>
+</div><div class='line'><span class="s1">    return alen;</span>
+</div><div class='line'><span class="s1">}</span>
+</div><div class='line'><span class="s1">&#39;</span>
+</div><div class='line'> </div><div class='line'>1 b 110
+</div><div class='line'>2 a 100
+</div><div class='line'>3 c 10
+</div></pre></td></tr></table></div></figure>
+
+
+<h1>总结</h1>
+
+<p>以上是awk数组排序一些方法。对于少量数据排序，就性能而言，使用自定义函数性能要高，不需要另外再开启进程。对于大量数据，排序第2种方法还是很不错的。</p>
+
+<p>转自<a href="http://www.cnblogs.com/chengmo/archive/2010/10/09/1846696.html">http://www.cnblogs.com/chengmo/archive/2010/10/09/1846696.html</a></p>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/awkpai-xu/'>http://andrew-home.github.io/blog/2014/04/07/awkpai-xu/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[awk 修改 shell 变量方法]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/"/>
+    <updated>2014-04-07T21:09:55+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>使用文件重定向：</p>
+
+<pre><code> #!/bin/bash 
+
+ var=1
+ awk 'BEGIN {print 2&gt;"tmp"}'
+ var=$( cat tmp ) 
+</code></pre></li>
+<li><p>使用eval</p>
+
+<pre><code> #!/bin/bash
+
+ eval $(awk 'BEGIN {print "var=2"}')
+ echo $var
+</code></pre></li>
+</ol>
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/'>http://andrew-home.github.io/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[apache安装及配置]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/"/>
+    <updated>2014-04-07T20:57:57+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi</id>
+    <content type="html"><![CDATA[<h1>安装apache</h1>
+
+<ol>
+<li>下载apache-2.4.3源码，解压到/usr/local/apache/httpd-2.4.3</li>
+<li>下载依赖包apr及apr-util，解压到/usr/local/apache/httpd-2.4.3/srclib/apr 及/usr/local/apache/srclib/apr-util</li>
+<li>下载pcre源码并安装到/usr/local/pcre</li>
+<li><p>在/usr/local/apache/httpd-2.4.3目录下执行命令</p>
+
+<pre><code> ./configure --prefix=/usr/local/apache --with-included-apr --with-pcre=/usr/local/pcre
+</code></pre></li>
+<li><p>执行命令make &amp;&amp; make install</p></li>
+</ol>
+
+
+<h1>cgi配置</h1>
+
+<p>首先需要在httpd.conf中取消<code>#LoadModule cgid_module modules/mod_cgid.so</code> 的注释。</p>
+
+<p>可以有两种方法指定cgi的目录</p>
+
+<ol>
+<li><p>将cgi程序放到指定目录（如/usr/local/apache/cgi-bin），然后在httpd.conf中添加</p>
+
+<pre><code> ScriptAlias /cgi-bin "/usr/local/apache/cgi-bin" 
+</code></pre>
+
+<p> 语句，但这时/usr/local/apache/cgi-bin中的静态文件（.html）将无法访问，会报Server Internal Error的错误，因为 ScriptAlias 是告诉apache 该目录下的都是script</p></li>
+<li><p>如果需要将cgi与静态文件一起放在一个文件夹（如 /usr/local/apache/www），则在httpd.conf中添加</p>
+
+<pre><code> Alias /www "/usr/local/apache/www"
+ &lt;Directory "/usr/local/apache/www"&gt;
+     AllowOverride None
+     Options ExecCGI
+     Require all granted #重要，否则报403错误
+     AddHandler cgi-script .cgi
+ &lt;/Directory&gt;
+</code></pre>
+
+<p> 就可以让cgi及html都可以访问了</p></li>
+</ol>
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/'>http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[wsgi配置]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/"/>
+    <updated>2014-04-07T20:50:00+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi</id>
+    <content type="html"><![CDATA[<p>在/etc/apache2/sites-enabled/000-default 中添加如下配置</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>WSGIScriptAlias /wsgi-bin /usr/lib/wsgi-bin/index.py
+</div><div class='line'>&lt;Directory "/usr/lib/wsgi-bin"> 
+</div><div class='line'>    Order allow,deny 
+</div><div class='line'>    Allow from all 
+</div><div class='line'>&lt;/Directory></div></pre></td></tr></table></div></figure>
+
+
+<p>WSGIScriptAlias 一句表示所有<code>http://XXX/wsgi-bin/</code>下的请求都由/usr/lib/wsgi-bin/index.py这个wsgi app处理。</p>
+
+<p>注意：如果写成 WSGIScriptAlias /wsgi-bin/  /usr/lib/wsgi-bin/index.py则表示仅 <code>http://XXX/wsgi-bin/</code> 这个url是由index.py处理，如果请求 <code>http://XXX/wsgi-bin/other</code> 则报404</p>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/'>http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Django在apache中的配置]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/"/>
+    <updated>2014-04-07T20:45:40+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi</id>
+    <content type="html"><![CDATA[<p>apache配置文件（省略无关配置）：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>&lt;VirtualHost *:80> 
+</div><div class='line'>        WSGIDaemonProcess DjangoProject processes=2 threads=15 python-path=/home/andrew/hg_repo/Django
+</div><div class='line'> </div><div class='line'>        WSGIProcessGroup DjangoProject 
+</div><div class='line'>        Alias /static/js/ /home/andrew/hg_repo/Django/DjangoProject/static/js/
+</div><div class='line'>        Alias /static/css/ /home/andrew/hg_repo/Django/DjangoProject/static/css/ 
+</div><div class='line'> </div><div class='line'>        WSGIScriptAlias / /home/andrew/hg_repo/Django/DjangoProject/wsgi.py
+</div><div class='line'>        #WSGIPythonPath /home/andrew/hg_repo/Django
+</div><div class='line'>        &lt;Directory "/home/andrew/hg_repo/Django/DjangoProject">
+</div><div class='line'>           Order allow,deny 
+</div><div class='line'>           Allow from all 
+</div><div class='line'>        &lt;/Directory>
+</div><div class='line'>&lt;/VirtualHost> </div></pre></td></tr></table></div></figure>
+
+
+<p>这里让mod_wsgi工作在daemon模式下（官方推荐），python-path表明项目包的路径。WSGIPythonPath 一项在VirtualHost 内不能使用，只能放到httpd.conf中，作用与python-path相同。</p>
+
+<p>注意 Alias /static/js/及css要放在WSGIScriptAlias前面，让静态文件给apache先处理。</p>
+
+<p>另外，如果django的settings.py中把Debug设为了False,必须修改以下配置：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'># Hosts/domain names that are valid for this site; required if DEBUG is False
+</div><div class='line'># See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts 
+</div><div class='line'> </div><div class='line'>ALLOWED_HOSTS = []</div></pre></td></tr></table></div></figure>
+
+
+<p>改为</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>ALLOWED_HOSTS = [”*“]</div></pre></td></tr></table></div></figure>
+
+
+<p>当然，TIME_ZONE的值也应当首先改为&#8217;Asia/Shanghai&#8217; （没有北京的）</p>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/'>http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/</a><br/>
+            </p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用git subtree管理本博客]]></title>
@@ -40,7 +918,12 @@
 </div><div class='line'>└── theme</div></pre></td></tr></table></div></figure>
 
 
-<p>theme 是另外一个repo，用于维护博客样式的变更，采用subtree的形式包含在blog-source这个repo里。在第一次添加theme子目录时，用的命令如下：</p>
+<p>theme 是另外一个repo，用于维护博客样式的变更，采用subtree的形式包含在blog-source这个repo里。</p>
+
+<!--more-->
+
+
+<p>在第一次添加theme子目录时，用的命令如下：</p>
 
 <figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>语法：git remote add -f &lt;子仓库名> &lt;子仓库地址>
 </div><div class='line'>解释：其中-f意思是在添加远程仓库之后，立即执行fetch。
@@ -106,9 +989,15 @@
     <link href="http://andrew-home.github.io/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/"/>
     <updated>2014-04-07T15:27:05+08:00</updated>
     <id>http://andrew-home.github.io/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong</id>
-    <content type="html"><![CDATA[<h1>使用情况总结</h1>
+    <content type="html"><![CDATA[<p>Order allow,deny # 这句话的作用是配置allow和deny的顺序，最后一个关键字代表默认策略，第一个圆<br/>
+Allow from all # allow规则，第二个圆<br/>
+deny from 192.9.200.69 # deny规则，第三个圆</p>
 
-<p>我们来看下下面的apache的一个配置，具体代码如下：</p>
+<!--more-->
+
+
+<p>
+我们来看下下面的apache的一个配置，具体代码如下：</p>
 
 <figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>&lt;Directory "D:/TRS/Apache2.2.17/cgi-bin">
 </div><div class='line'>    Order allow,deny  #1
@@ -117,72 +1006,79 @@
 </div><div class='line'>&lt;/Directory></div></pre></td></tr></table></div></figure>
 
 
-<p>具体规律如下：
-1.  规律
-当我们看到一个apache的配置时，可以从下面的角度来理解。一默认，二顺序，三重叠。
-2.  上面配置说明
-[1] 一默认
-Order allow,deny ，这句话的作用是配置allow和deny的顺序，默认只有最后一个关键字起作用，这里起作用的关键字就是“deny”，默认拒绝所有请求。为了便于理解，我们可以画一个圆，圆的背景色涂上黑色，我们给这个圆起个编号，叫圆1。</p>
+<p>具体规律如下:</p>
 
-<p>[2] 二顺序
-由于上边的Order指出判断的顺序是先判断allow的规则，然后才是deny的规则。所以我们要先判断allow的请求，由于该请求中配置的是allow from all，
-所以表示该请求允许所有请求。这时我们再画一个圆，背景色涂上白色，我们给圆起个编号，叫圆2。
-我们再来看deny的判断规则，由于 deny from 192.9.200.69 ，表示拒绝来自ip地址为“192.9.200.69”，所以我们可以画出一块红色区域，表示“192.9.200.69”，我们把这块区域叫区域3。
-注意:即使把“Allow from all”写在“deny from 192.9.200.69”下面，依然是需要先判断allow规则，也就是说只有Order才能决定allow和order的优先顺序。</p>
+<ul>
+<li>规律</li>
+</ul>
 
-<p>[3] 三重叠
-我们把上边产生的圆1、圆2和区域3依次从下往上堆叠在一起。每个层都是不透明的，这时我们可以看到最终效果是除了“192.9.200.69”这块红色区域外，其他的所有都是白色区域。也就是只有“192.9.200.69”这个ip地址没有权限访问该目录，其他的请求都有权限访问该目录。</p>
+
+<p>当我们看到一个apache的配置时，可以从下面的角度来理解。一默认，二顺序，三重叠。</p>
+
+<ul>
+<li><p>上面配置说明</p>
+
+<ol>
+<li><p> 一默认</p>
+
+<p>  Order allow,deny ，这句话的作用是配置allow和deny的顺序，默认只有最后一个关键字起作用，这里起作用的关键字就是“deny”，默认拒绝所有请求。为了便于理解，我们可以画一个圆，圆的背景色涂上黑色，我们给这个圆起个编号，叫圆1。</p></li>
+<li><p> 二顺序</p>
+
+<p>  由于上边的Order指出判断的顺序是先判断allow的规则，然后才是deny的规则。所以我们要先判断allow的请求，由于该请求中配置的是allow from all，
+  所以表示该请求允许所有请求。这时我们再画一个圆，背景色涂上白色，我们给圆起个编号，叫圆2。</p>
+
+<p>  我们再来看deny的判断规则，由于 deny from 192.9.200.69 ，表示拒绝来自ip地址为“192.9.200.69”，所以我们可以画出一块红色区域，表示“192.9.200.69”，我们把这块区域叫区域3。</p>
+
+<p>  注意:即使把“Allow from all”写在“deny from 192.9.200.69”下面，依然是需要先判断allow规则，也就是说只有Order才能决定allow和order的优先顺序。</p></li>
+<li><p> 三重叠</p>
+
+<p>  我们把上边产生的圆1、圆2和区域3依次从下往上堆叠在一起。每个层都是不透明的，这时我们可以看到最终效果是除了“192.9.200.69”这块红色区域外，其他的所有都是白色区域。也就是只有“192.9.200.69”这个ip地址没有权限访问该目录，其他的请求都有权限访问该目录。</p></li>
+</ol>
+</li>
+</ul>
+
 
 <h1>看看下面的例子</h1>
 
 <p>也许上边没有说明白，我们再来看下面的例子，每个配置后面都有简单的说明，配置文件中的“#”号后边的数字表示配置项起作用的先后顺序。</p>
 
 <ol>
-<li>只允许192.9.200.69请求访问目录</li>
+<li><p>只允许192.9.200.69请求访问目录</p>
+
+<pre><code> &lt;Directory "D:/TRS/Apache2.2.17/cgi-bin"&gt;
+ Order deny,allow #1.默认允许全部请求
+ Allow from 192.9.200.69 #3.重叠，允许IP192.9.200.69的请求
+ deny from all #2.按照顺序，先判断deny规则，拒绝所有请求
+ &lt;/Directory&gt;
+</code></pre></li>
+<li><p>允许所有请求访问目录</p>
+
+<pre><code> &lt;Directory "D:/TRS/Apache2.2.17/cgi-bin"&gt;
+ Order deny,allow #1.默认允许全部请求
+ Allow from all #3.重叠，允许所有请求
+ deny from 192.9.200.69 #2.按照顺序，先判断deny规则，拒绝192.9.200.69的请求
+ &lt;/Directory&gt;
+</code></pre></li>
+<li><p>拒绝所有请求访问目录</p>
+
+<pre><code> &lt;Directory "D:/TRS/Apache2.2.17/cgi-bin"&gt;
+ Order allow,deny #1.默认拒绝全部请求
+ Allow from 192.9.200.69 #2.顺序，允许 192.9.200.69请求
+ deny from  all#3.重叠，拒绝所有请求
+ &lt;/Directory&gt;
+</code></pre></li>
+<li><p>除了192.9.200.69的请求外，其他请求都可以访问目录</p>
+
+<pre><code> &lt;Directory "D:/TRS/Apache2.2.17/cgi-bin"&gt;
+ Order allow,deny #1.默认拒绝全部请求
+ deny from  192.9.200.69#3.重叠，拒绝192.9.200.69请求
+ Allow from all #2.顺序，允许所有请求
+ &lt;/Directory&gt;
+</code></pre></li>
 </ol>
 
 
-<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number marked start end'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div></pre></td><td class='main  plain'><pre><div class='line'>&lt;Directory "D:/TRS/Apache2.2.17/cgi-bin">
-</div><div class='line'>   Order deny,allow #1.默认允许全部请求
-</div><div class='line marked start end'>Allow from 192.9.200.69 #3.重叠，允许IP192.9.200.69的请求
-</div><div class='line'>deny from all #2.按照顺序，先判断deny规则，拒绝所有请求
-</div><div class='line'>&lt;/Directory></div></pre></td></tr></table></div></figure>
-
-
-<ol>
-<li>允许所有请求访问目录</li>
-</ol>
-
-
-<p><Directory "D:/TRS/Apache2.2.17/cgi-bin">
-Order deny,allow #1.默认允许全部请求
-Allow from all #3.重叠，允许所有请求
-deny from 192.9.200.69 #2.按照顺序，先判断deny规则，拒绝192.9.200.69的请求
-</Directory></p>
-
-<ol>
-<li>拒绝所有请求访问目录</li>
-</ol>
-
-
-<p><Directory "D:/TRS/Apache2.2.17/cgi-bin">
-Order allow,deny #1.默认拒绝全部请求
-Allow from 192.9.200.69 #2.顺序，允许 192.9.200.69请求
-deny from  all#3.重叠，拒绝所有请求
-</Directory></p>
-
-<ol>
-<li>除了192.9.200.69的请求外，其他请求都可以访问目录</li>
-</ol>
-
-
-<p><Directory "D:/TRS/Apache2.2.17/cgi-bin">
-Order allow,deny #1.默认拒绝全部请求
-deny from  192.9.200.69#3.重叠，拒绝192.9.200.69请求
-Allow from all #2.顺序，允许所有请求
-</Directory></p>
-
-<p>转自：(<a href="http://blog.csdn.net/wgw335363240/article/details/6362418">http://blog.csdn.net/wgw335363240/article/details/6362418</a>)</p>
+<p>转自：<a href="http://blog.csdn.net/wgw335363240/article/details/6362418">http://blog.csdn.net/wgw335363240/article/details/6362418</a></p>
 
 <p class='post-footer'>
             本文地址:

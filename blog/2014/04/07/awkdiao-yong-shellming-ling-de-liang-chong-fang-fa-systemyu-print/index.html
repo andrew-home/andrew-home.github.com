@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Categories - Andrew's Blog</title>
+  <title>awk调用shell命令的两种方法system与print - Andrew's Blog</title>
   <meta name="author" content="Andrew">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andrew-home.github.io/blog/categories/">
+  <link rel="canonical" href="http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -90,51 +90,17 @@ $(document).bind('DOMNodeInserted', function(event) {
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Categories</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time></p>
-  </header>
-  
-  <ul>
-
-    <li><a href="/blog/categories/test1/">Test1</a> [ 2 ]</li>
-
-    <li><a href="/blog/categories/test2/">Test2</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/apache/">Apache</a> [ 4 ]</li>
-
-    <li><a href="/blog/categories/git/">Git</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/awk/">Awk</a> [ 7 ]</li>
-
-    <li><a href="/blog/categories/debian/">Debian</a> [ 5 ]</li>
-
-    <li><a href="/blog/categories/mysql/">Mysql</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/linux/">Linux</a> [ 1 ]</li>
-
-</ul>
-
-
-  
-    <footer>
+    
+      
+        <h1 class="entry-title">Awk调用shell命令的两种方法system与print</h1>
+      
+    
+    
       <p class="meta">
         
-        
 
 
 
@@ -146,12 +112,111 @@ $(document).bind('DOMNodeInserted', function(event) {
   
 
 
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time>
+<time datetime="2014-04-07T22:07:27+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>awk获取执行shell命令后的结果：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>awk 'BEGIN{
+</div><div class='line'>　　i=1;while(i&lt;=5){
+</div><div class='line'>　　　　system("date > date.tmp")
+</div><div class='line'>　　　　getline &lt; "date.tmp"
+</div><div class='line'>　　　　print $1
+</div><div class='line'>　　　　system("sleep 2")
+</div><div class='line'>　　　　close("date.tmp")
+</div><div class='line'>　　　　i++
+</div><div class='line'>　　}
+</div><div class='line'>}'</div></pre></td></tr></table></div></figure>
+
+
+<p>或者</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>awk 'BEGIN{
+</div><div class='line'>　　i=1;while(i&lt;=5){
+</div><div class='line'>　　　　system("date > date.tmp")
+</div><div class='line'>　　　　getline a&lt; "date.tmp"
+</div><div class='line'>　　　　print a
+</div><div class='line'>　　　　system("sleep 2")
+</div><div class='line'>　　　　close("date.tmp")
+</div><div class='line'>　　　　i++
+</div><div class='line'>　　}
+</div><div class='line'>}'</div></pre></td></tr></table></div></figure>
+
+
+<p>或者</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>awk 'BEGIN{
+</div><div class='line'>　　i=1;while(i&lt;=5){
+</div><div class='line'>　　　　"date" | getline
+</div><div class='line'>　　　　print $1
+</div><div class='line'>　　　　system("sleep 2")
+</div><div class='line'>　　　　close("date")
+</div><div class='line'>　　　　i++
+</div><div class='line'>　　}
+</div><div class='line'>}'</div></pre></td></tr></table></div></figure>
+
+
+<p>注意：close(&ldquo;date.tmp&rdquo;)或close(&ldquo;date&rdquo;)一句必不可少，否则每次循环从管道拿到的都是已经打开的文件或命令的数据</p>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/'>http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/</a><br/>
+            </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
       
-    </footer>
   
+
+<span class="byline author vcard">Posted by <span class="fn">Andrew</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-07T22:07:27+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/awk/'>awk</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/" title="Previous Post: awk 读取 shell 变量的方法">&laquo; awk 读取 shell 变量的方法</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/blog/2014/04/07/awkcheng-xu-jie-shao/" title="Next Post: awk程序介绍">awk程序介绍 &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
 
 </div>

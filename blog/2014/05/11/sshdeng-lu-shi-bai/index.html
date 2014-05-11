@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Categories - Andrew's Blog</title>
+  <title>ssh登陆失败 - Andrew's Blog</title>
   <meta name="author" content="Andrew">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andrew-home.github.io/blog/categories/">
+  <link rel="canonical" href="http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -90,51 +90,17 @@ $(document).bind('DOMNodeInserted', function(event) {
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Categories</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time></p>
-  </header>
-  
-  <ul>
-
-    <li><a href="/blog/categories/test1/">Test1</a> [ 2 ]</li>
-
-    <li><a href="/blog/categories/test2/">Test2</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/apache/">Apache</a> [ 4 ]</li>
-
-    <li><a href="/blog/categories/git/">Git</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/awk/">Awk</a> [ 7 ]</li>
-
-    <li><a href="/blog/categories/debian/">Debian</a> [ 5 ]</li>
-
-    <li><a href="/blog/categories/mysql/">Mysql</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/linux/">Linux</a> [ 1 ]</li>
-
-</ul>
-
-
-  
-    <footer>
+    
+      
+        <h1 class="entry-title">Ssh登陆失败</h1>
+      
+    
+    
       <p class="meta">
         
-        
 
 
 
@@ -146,12 +112,81 @@ $(document).bind('DOMNodeInserted', function(event) {
   
 
 
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time>
+<time datetime="2014-05-11T22:56:26+08:00" pubdate data-updated="true">May 11<span>th</span>, 2014</time>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>用ssh key登陆不上某台机A的某个账号xy1，查看A的/var/log/messages，看到有这么句：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>User xy1 not allowed because account is locked </div></pre></td></tr></table></div></figure>
+
+
+<p>原因是该账号没设密码，被锁住了，用以下命令解决：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>passwd -u xy1
+</div><div class='line'>usermod -p -u xy1 </div></pre></td></tr></table></div></figure>
+
+
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai/'>http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai/</a><br/>
+            </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
       
-    </footer>
   
+
+<span class="byline author vcard">Posted by <span class="fn">Andrew</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-11T22:56:26+08:00" pubdate data-updated="true">May 11<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/debian/'>debian</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/05/11/ssh-an-zhuang-bi-ji/" title="Previous Post: ssh 安装笔记">&laquo; ssh 安装笔记</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/blog/2014/05/11/gre-tunnelda-jian/" title="Next Post: gre tunnel搭建">gre tunnel搭建 &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
 
 </div>

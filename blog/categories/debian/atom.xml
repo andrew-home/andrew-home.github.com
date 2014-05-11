@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: debian | Andrew's Blog]]></title>
+  <link href="http://andrew-home.github.io/blog/categories/debian/atom.xml" rel="self"/>
+  <link href="http://andrew-home.github.io/"/>
+  <updated>2014-05-11T23:24:44+08:00</updated>
+  <id>http://andrew-home.github.io/</id>
+  <author>
+    <name><![CDATA[Andrew]]></name>
+    <email><![CDATA[gzdujunchao@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[gre tunnel搭建]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian/"/>
+    <updated>2014-05-11T23:00:00+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian</id>
+    <content type="html"><![CDATA[<p> 客户端（client）与服务器A在同一个运营商网络，应用部署在服务器B，服务器A 、B之间建立tunnel，A设置dnat，client通过访问A的8000端口来访问服务器B，B返回的响应通过tunnel到达A，A再返回给client。在dnat之上使用tunnel的原因是通过tunnel后，B接收到的请求源IP为client，而不是A。</p>
+
+<p>```</p>
+
+<p>+&mdash;&mdash;&mdash;&mdash;&mdash;+          +&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+                +&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+|          |          |                        |     tunnel     |                        |
+|  client  +&mdash;&mdash;&mdash;&mdash;> |       server A         | &lt;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;> |       server B         |
+|          |          |                        |                |                        |
+|          |          +&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+                +&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+|          |          |                        |                |                        |
++&mdash;&mdash;&mdash;&mdash;&mdash;+          | ip:192.168.1.1         |                | ip:192.168.2.2         |</p>
+
+<pre><code>                  |                        |                |                        |
+                  | tunnel_ip:10.111.111.1 |                | tunnel_ip:10.111.111.2 |
+                  |                        |                |                        |
+                  +------------------------+                +------------------------+
+</code></pre>
+
+<p>```</p>
+
+<h2>在A(linux) 搭建 gre tunnel过程</h2>
+
+<ol>
+<li><p>创建gre tunnel：</p>
+
+<pre><code> /sbin/modprobe ip_gre
+ /sbin/iptunnel add tun0 mode gre remote 192.168.2.2 local 192.168.1.1
+ /sbin/ifconfig tun0 10.111.111.1
+ /sbin/route add 10.111.111.2 tun0
+</code></pre></li>
+<li><p>设置iptables规则：</p>
+
+<pre><code> #这个规则很重要，某些特殊的网络会影响mtu的协商，所以要用这个规则来指写mtu
+ /sbin/iptables -t mangle -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+
+ #到apache端口的映射
+ /sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 8000 -j DNAT --to-destination 10.111.111.2:8000 
+
+ #SNAT规则
+ /sbin/iptables -t nat -A POSTROUTING -o eth0 -p tcp -j SNAT --to-source 192.168.1.1 
+</code></pre></li>
+</ol>
+
+
+<h2>当B是bsd时，在B搭建 gre tunnel过程：</h2>
+
+<ol>
+<li><p>BSD 6.2的默认内核不支持ipfw的forward功能，需要重编一下kernel。找一个默认的SMP配置文件，在最后加上</p>
+
+<pre><code> options IPFIREWALL
+ options IPDIVERT
+ options IPFIREWALL_DEFAULT_TO_ACCEPT
+ options IPFIREWALL_VERBOSE
+ options IPFIREWALL_VERBOSE_LIMIT=10
+ options IPFIREWALL_FORWARD
+ options DUMMYNET
+</code></pre>
+
+<p> 编译内核重启（或者直接找一个编译好的来用）</p></li>
+<li><p>做一个到napt服务器的tunnel。在BSD 4.x下，ipip tunnel工作良好，但在6.2下会有一些古怪的问题，小包通讯正常，大包就无法通过，因此要改用gre tunnel。通过下面的命令来创建tunnel，同时可以把这些命令写到/etc/rc.local，服务器启动的时候自动创建：</p>
+
+<pre><code> /sbin/ifconfig gre0 create
+ /sbin/ifconfig gre0 tunnel 192.168.2.2 192.168.1.1
+ /sbin/ifconfig gre0 10.111.111.2/32 10.111.111.1
+</code></pre></li>
+<li><p>做转发规则。实现类似linux下ip route的功能，将从10.111.111.2发出的包，都转发给tunnel另一端的napt服务器。</p>
+
+<pre><code> /sbin/ipfw add 100 fwd 10.111.111.1 ip from 10.111.111.2 to any
+</code></pre>
+
+<p> 也可以使用ipf来实现源地址路由的功能（不用重新编译内核）</p>
+
+<ol>
+<li><p>创建tunnel跟上面的第2步一样</p></li>
+<li><p>在ipf的rule文件添加规则：</p>
+
+<pre><code> pass out quick on bge0 to gre0:10.111.111.2 from 10.111.111.1 to any
+</code></pre>
+
+<p> 然后<code>/etc/rc.d/ipfilter restart</code>即可</p></li>
+</ol>
+</li>
+</ol>
+
+
+<h2>当B是linux时，在B搭建 gre tunnel过程：</h2>
+
+<ol>
+<li><p>装一个iproute的包，修改/etc/iproute2/rt_tables，添加自定义的table</p>
+
+<pre><code> 201 mytunnel
+</code></pre></li>
+<li><p>做一条tunnel，步骤不再重复，假设得到tun0</p></li>
+<li><p>添加ip route规则</p>
+
+<pre><code> #设置mytunnel表的默认路由，都指到tun0 
+ /sbin/ip route add default dev tun0 table mytunnel mtu 1400
+
+ #添加一个规则，让所有从10.111.111.2发出的包都到mytunnel表里面去找路由
+ /sbin/ip rule add from 10.111.111.2 table mytunnel
+</code></pre></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ssh登陆失败]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai/"/>
+    <updated>2014-05-11T22:56:26+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai</id>
+    <content type="html"><![CDATA[<p>用ssh key登陆不上某台机A的某个账号xy1，查看A的/var/log/messages，看到有这么句：
+<code>
+User xy1 not allowed because account is locked
+</code>
+原因是该账号没设密码，被锁住了，用以下命令解决：
+<code>
+passwd -u xy1
+usermod -p -u xy1
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ssh 安装笔记]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji/"/>
+    <updated>2014-05-11T22:52:32+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji</id>
+    <content type="html"><![CDATA[<p>debian 6.0 的一台32位机器，使用<code>aptitude search openssh-server-x509</code>没结果（其他机同样源配置是有结果的），于是上内部源下载openssh-server-x509.deb，安装过程如下：</p>
+
+<ul>
+<li><p>彻底删除之前安装失败的包及残留配置文件(用aptitude remove &mdash;purge不够彻底，安装时会报错）</p>
+
+<pre><code>  dpkg -P openssh-server-x509
+</code></pre></li>
+<li><p>检查是否删除干净</p>
+
+<pre><code>  dpkg -s openssh-server-x509
+</code></pre></li>
+<li><p>安装新包</p>
+
+<pre><code>  dpkg -i openssh-server-x509.deb 
+</code></pre></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[在64位的linux上运行32位的程序]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/"/>
+    <updated>2014-05-11T22:49:25+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>症状</p>
+
+<ul>
+<li>执行bin文件时提示：No such file or directory</li>
+<li>ldd bin文件  的输出为： not a dynamic executable</li>
+<li>file bin文件 的输出显示程序是32位</li>
+</ul>
+</li>
+<li><p>解决</p>
+
+<p> debian上只要安装 ia32-libs这个包（apt-get install ia32-libs)就可以了。</p></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[debian下mysql主从配置]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/"/>
+    <updated>2014-05-11T22:44:26+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>确保master/slave只有一份/etc/mysql/my.cnf , 不要在其他地方再有my.cnf （如/etc/my.cnf  /usr/local之类）</p></li>
+<li><p>配置文件</p>
+
+<p> master配置：</p>
+
+<p> 在[mysqld]节点下添加：</p>
+
+<pre><code> server-id=1
+</code></pre>
+
+<p> slave配置：</p>
+
+<p> 在[mysqld]节点下添加：</p>
+
+<pre><code> server-id=2
+ relay-log = /home/mysql/logs/mysqld-relay-bin
+ relay-log-index = /home/mysql/logs/mysqld-relay-bin.index
+ replicate-ignore-db=mysql
+ replicate-ignore-db=test
+</code></pre></li>
+<li><p>先后重启master、slave的mysql： /etc/init.d/mysql restart</p></li>
+<li><p>在master上用root登陆mysql: mysql -uroot -p</p></li>
+<li><p>master上锁表：</p>
+
+<pre><code> mysql&gt; flush tables with read lock;
+</code></pre></li>
+<li><p>show master status; 记录binlog的名字和位置</p></li>
+<li><p>slave是登陆mysql，然后：</p>
+
+<pre><code> mysql&gt; slave stop;
+ mysql&gt; CHANGE MASTER TO MASTER_HOST='X.X.X.X',MASTER_USER='slave',MASTER_PASSWORD='fai',MASTER_LOG_FILE='mysqld-bin.000015',MASTER_LOG_POS=106;
+ mysql&gt; slave start;
+ mysql&gt; show slave status\G;
+</code></pre></li>
+<li><p>master上解锁：</p>
+
+<pre><code> mysql&gt; unlock tables;
+</code></pre></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+</feed>

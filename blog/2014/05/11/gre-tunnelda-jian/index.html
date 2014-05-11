@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>gre tunnel搭建 - Andrew's Blog</title>
+  <meta name="author" content="Andrew">
+
+  
+  <meta name="description" content="Andrew's Blog">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Andrew's Blog" type="application/atom+xml">
+  <!--
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  
+
+  -->
+  <!-- 
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+-->
+<script type="text/javascript">
+
+function addBlankTargetForLinks () {
+  $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+  });
+}
+
+$(document).bind('DOMNodeInserted', function(event) {
+  addBlankTargetForLinks();
+});
+
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+    <!--
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">sihugh</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+    -->
+    <img src="/images/head.png" height="120px"></img>
+  </div>
+  <h1><a href="/">Andrew's Blog</a></h1>
+  
+    <h2>不管去哪里,出发最重要.</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://google.com.hk/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:andrew-home.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Gre Tunnel搭建</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-11T23:00:00+08:00" pubdate data-updated="true">May 11<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p> 客户端（client）与服务器A在同一个运营商网络，应用部署在服务器B，服务器A 、B之间建立tunnel，A设置dnat，client通过访问A的8000端口来访问服务器B，B返回的响应通过tunnel到达A，A再返回给client。在dnat之上使用tunnel的原因是通过tunnel后，B接收到的请求源IP为client，而不是A。</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'> </div><div class='line'>+----------+          +------------------------+                +------------------------+
+</div><div class='line'>|          |          |                        |     tunnel     |                        |
+</div><div class='line'>|  client  +--------> |       server A         | &lt;------------> |       server B         |
+</div><div class='line'>|          |          |                        |                |                        |
+</div><div class='line'>|          |          +------------------------+                +------------------------+
+</div><div class='line'>|          |          |                        |                |                        |
+</div><div class='line'>+----------+          | ip:192.168.1.1         |                | ip:192.168.2.2         |
+</div><div class='line'>                      |                        |                |                        |
+</div><div class='line'>                      | tunnel_ip:10.111.111.1 |                | tunnel_ip:10.111.111.2 |
+</div><div class='line'>                      |                        |                |                        |
+</div><div class='line'>                      +------------------------+                +------------------------+
+</div><div class='line'> </div></pre></td></tr></table></div></figure>
+
+
+<h2>在A(linux) 搭建 gre tunnel过程</h2>
+
+<ol>
+<li><p>创建gre tunnel：</p>
+
+<pre><code> /sbin/modprobe ip_gre
+ /sbin/iptunnel add tun0 mode gre remote 192.168.2.2 local 192.168.1.1
+ /sbin/ifconfig tun0 10.111.111.1
+ /sbin/route add 10.111.111.2 tun0
+</code></pre></li>
+<li><p>设置iptables规则：</p>
+
+<pre><code> #这个规则很重要，某些特殊的网络会影响mtu的协商，所以要用这个规则来指写mtu
+ /sbin/iptables -t mangle -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+
+ #到apache端口的映射
+ /sbin/iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport 8000 -j DNAT --to-destination 10.111.111.2:8000 
+
+ #SNAT规则
+ /sbin/iptables -t nat -A POSTROUTING -o eth0 -p tcp -j SNAT --to-source 192.168.1.1 
+</code></pre></li>
+</ol>
+
+
+<h2>当B是bsd时，在B搭建 gre tunnel过程：</h2>
+
+<ol>
+<li><p>BSD 6.2的默认内核不支持ipfw的forward功能，需要重编一下kernel。找一个默认的SMP配置文件，在最后加上</p>
+
+<pre><code> options IPFIREWALL
+ options IPDIVERT
+ options IPFIREWALL_DEFAULT_TO_ACCEPT
+ options IPFIREWALL_VERBOSE
+ options IPFIREWALL_VERBOSE_LIMIT=10
+ options IPFIREWALL_FORWARD
+ options DUMMYNET
+</code></pre>
+
+<p> 编译内核重启（或者直接找一个编译好的来用）</p></li>
+<li><p>做一个到napt服务器的tunnel。在BSD 4.x下，ipip tunnel工作良好，但在6.2下会有一些古怪的问题，小包通讯正常，大包就无法通过，因此要改用gre tunnel。通过下面的命令来创建tunnel，同时可以把这些命令写到/etc/rc.local，服务器启动的时候自动创建：</p>
+
+<pre><code> /sbin/ifconfig gre0 create
+ /sbin/ifconfig gre0 tunnel 192.168.2.2 192.168.1.1
+ /sbin/ifconfig gre0 10.111.111.2/32 10.111.111.1
+</code></pre></li>
+<li><p>做转发规则。实现类似linux下ip route的功能，将从10.111.111.2发出的包，都转发给tunnel另一端的napt服务器。</p>
+
+<pre><code> /sbin/ipfw add 100 fwd 10.111.111.1 ip from 10.111.111.2 to any
+</code></pre>
+
+<p> 也可以使用ipf来实现源地址路由的功能（不用重新编译内核）</p>
+
+<ol>
+<li><p>创建tunnel跟上面的第2步一样</p></li>
+<li><p>在ipf的rule文件添加规则：</p>
+
+<pre><code> pass out quick on bge0 to gre0:10.111.111.2 from 10.111.111.1 to any
+</code></pre>
+
+<p> 然后<code>/etc/rc.d/ipfilter restart</code>即可</p></li>
+</ol>
+</li>
+</ol>
+
+
+<h2>当B是linux时，在B搭建 gre tunnel过程：</h2>
+
+<ol>
+<li><p>装一个iproute的包，修改/etc/iproute2/rt_tables，添加自定义的table</p>
+
+<pre><code> 201 mytunnel
+</code></pre></li>
+<li><p>做一条tunnel，步骤不再重复，假设得到tun0</p></li>
+<li><p>添加ip route规则</p>
+
+<pre><code> #设置mytunnel表的默认路由，都指到tun0 
+ /sbin/ip route add default dev tun0 table mytunnel mtu 1400
+
+ #添加一个规则，让所有从10.111.111.2发出的包都到mytunnel表里面去找路由
+ /sbin/ip rule add from 10.111.111.2 table mytunnel
+</code></pre></li>
+</ol>
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian/'>http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian/</a><br/>
+            </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Andrew</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-11T23:00:00+08:00" pubdate data-updated="true">May 11<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/debian/'>debian</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/05/11/sshdeng-lu-shi-bai/" title="Previous Post: ssh登陆失败">&laquo; ssh登陆失败</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/apache/'>apache (4)</a></li>
+<li class='category'><a href='/blog/categories/awk/'>awk (7)</a></li>
+<li class='category'><a href='/blog/categories/debian/'>debian (5)</a></li>
+<li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/linux/'>linux (1)</a></li>
+<li class='category'><a href='/blog/categories/mysql/'>mysql (1)</a></li>
+<li class='category'><a href='/blog/categories/test1/'>test1 (2)</a></li>
+<li class='category'><a href='/blog/categories/test2/'>test2 (1)</a></li>
+
+  </ul>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/05/11/gre-tunnelda-jian/">Gre Tunnel搭建</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/11/sshdeng-lu-shi-bai/">Ssh登陆失败</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/11/ssh-an-zhuang-bi-ji/">Ssh 安装笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/">在64位的linux上运行32位的程序</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/">Debian下mysql主从配置</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Andrew -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

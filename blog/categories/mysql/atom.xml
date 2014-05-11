@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mysql | Andrew's Blog]]></title>
+  <link href="http://andrew-home.github.io/blog/categories/mysql/atom.xml" rel="self"/>
+  <link href="http://andrew-home.github.io/"/>
+  <updated>2014-05-11T23:24:44+08:00</updated>
+  <id>http://andrew-home.github.io/</id>
+  <author>
+    <name><![CDATA[Andrew]]></name>
+    <email><![CDATA[gzdujunchao@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[debian下mysql主从配置]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/"/>
+    <updated>2014-05-11T22:44:26+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>确保master/slave只有一份/etc/mysql/my.cnf , 不要在其他地方再有my.cnf （如/etc/my.cnf  /usr/local之类）</p></li>
+<li><p>配置文件</p>
+
+<p> master配置：</p>
+
+<p> 在[mysqld]节点下添加：</p>
+
+<pre><code> server-id=1
+</code></pre>
+
+<p> slave配置：</p>
+
+<p> 在[mysqld]节点下添加：</p>
+
+<pre><code> server-id=2
+ relay-log = /home/mysql/logs/mysqld-relay-bin
+ relay-log-index = /home/mysql/logs/mysqld-relay-bin.index
+ replicate-ignore-db=mysql
+ replicate-ignore-db=test
+</code></pre></li>
+<li><p>先后重启master、slave的mysql： /etc/init.d/mysql restart</p></li>
+<li><p>在master上用root登陆mysql: mysql -uroot -p</p></li>
+<li><p>master上锁表：</p>
+
+<pre><code> mysql&gt; flush tables with read lock;
+</code></pre></li>
+<li><p>show master status; 记录binlog的名字和位置</p></li>
+<li><p>slave是登陆mysql，然后：</p>
+
+<pre><code> mysql&gt; slave stop;
+ mysql&gt; CHANGE MASTER TO MASTER_HOST='X.X.X.X',MASTER_USER='slave',MASTER_PASSWORD='fai',MASTER_LOG_FILE='mysqld-bin.000015',MASTER_LOG_POS=106;
+ mysql&gt; slave start;
+ mysql&gt; show slave status\G;
+</code></pre></li>
+<li><p>master上解锁：</p>
+
+<pre><code> mysql&gt; unlock tables;
+</code></pre></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+</feed>

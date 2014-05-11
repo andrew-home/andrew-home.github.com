@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Categories - Andrew's Blog</title>
+  <title>awk 读取 shell 变量的方法 - Andrew's Blog</title>
   <meta name="author" content="Andrew">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andrew-home.github.io/blog/categories/">
+  <link rel="canonical" href="http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -90,51 +90,17 @@ $(document).bind('DOMNodeInserted', function(event) {
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Categories</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time></p>
-  </header>
-  
-  <ul>
-
-    <li><a href="/blog/categories/test1/">Test1</a> [ 2 ]</li>
-
-    <li><a href="/blog/categories/test2/">Test2</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/apache/">Apache</a> [ 4 ]</li>
-
-    <li><a href="/blog/categories/git/">Git</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/awk/">Awk</a> [ 7 ]</li>
-
-    <li><a href="/blog/categories/debian/">Debian</a> [ 5 ]</li>
-
-    <li><a href="/blog/categories/mysql/">Mysql</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/linux/">Linux</a> [ 1 ]</li>
-
-</ul>
-
-
-  
-    <footer>
+    
+      
+        <h1 class="entry-title">Awk 读取 Shell 变量的方法</h1>
+      
+    
+    
       <p class="meta">
         
-        
 
 
 
@@ -146,12 +112,88 @@ $(document).bind('DOMNodeInserted', function(event) {
   
 
 
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time>
+<time datetime="2014-04-07T22:02:41+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><ol>
+<li><p>在awk中用&#8221;&lsquo;$var&rsquo;&#8221;</p>
+
+<pre><code> #!/bin/bash
+
+ var=test
+ awk 'BEGIN { print "'$var'" }' 
+</code></pre>
+
+<p> 如果var有空格、转义字符等特殊字符，最好在$var外再用一个双引号括住： <code>"'"$var"'"</code></p></li>
+<li><p>awk -v awk中的变量名= shell中的变量名</p>
+
+<pre><code> #!/bin/bash
+
+ varS=test
+ awk -v varA="$varS"  'BEGIN { print  varA}' 
+</code></pre></li>
+</ol>
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/'>http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/</a><br/>
+            </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
       
-    </footer>
   
+
+<span class="byline author vcard">Posted by <span class="fn">Andrew</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-07T22:02:41+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/awk/'>awk</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/04/07/awkshu-zi-bi-jiao/" title="Previous Post: awk数字比较">&laquo; awk数字比较</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/" title="Next Post: awk调用shell命令的两种方法system与print">awk调用shell命令的两种方法system与print &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
 
 </div>

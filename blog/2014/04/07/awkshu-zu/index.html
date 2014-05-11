@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Categories - Andrew's Blog</title>
+  <title>awk数组 - Andrew's Blog</title>
   <meta name="author" content="Andrew">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andrew-home.github.io/blog/categories/">
+  <link rel="canonical" href="http://andrew-home.github.io/blog/2014/04/07/awkshu-zu/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -90,51 +90,17 @@ $(document).bind('DOMNodeInserted', function(event) {
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Categories</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time></p>
-  </header>
-  
-  <ul>
-
-    <li><a href="/blog/categories/test1/">Test1</a> [ 2 ]</li>
-
-    <li><a href="/blog/categories/test2/">Test2</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/apache/">Apache</a> [ 4 ]</li>
-
-    <li><a href="/blog/categories/git/">Git</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/awk/">Awk</a> [ 7 ]</li>
-
-    <li><a href="/blog/categories/debian/">Debian</a> [ 5 ]</li>
-
-    <li><a href="/blog/categories/mysql/">Mysql</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/linux/">Linux</a> [ 1 ]</li>
-
-</ul>
-
-
-  
-    <footer>
+    
+      
+        <h1 class="entry-title">Awk数组</h1>
+      
+    
+    
       <p class="meta">
         
-        
 
 
 
@@ -146,12 +112,87 @@ $(document).bind('DOMNodeInserted', function(event) {
   
 
 
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time>
+<time datetime="2014-04-07T21:55:22+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>1.采用 for (val in Array) print Array[val] 的方法得到的遍历是无序的，即使下标val是1、2、3&hellip;.</p>
+
+<p>2.获得数组个数的方法</p>
+
+<p>split:</p>
+
+<pre><code>n=split(原字符串, 数组名, 分隔字符) print n
+</code></pre>
+
+<p>asort(排序）:</p>
+
+<pre><code>n=print asort(Array)
+</code></pre>
+
+<p>length:</p>
+
+<pre><code>n=length(Array)
+</code></pre>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/awkshu-zu/'>http://andrew-home.github.io/blog/2014/04/07/awkshu-zu/</a><br/>
+            </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
       
-    </footer>
   
+
+<span class="byline author vcard">Posted by <span class="fn">Andrew</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-07T21:55:22+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/awk/'>awk</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/04/07/awkpai-xu/" title="Previous Post: awk排序">&laquo; awk排序</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/blog/2014/04/07/awkshu-zi-bi-jiao/" title="Next Post: awk数字比较">awk数字比较 &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
 
 </div>

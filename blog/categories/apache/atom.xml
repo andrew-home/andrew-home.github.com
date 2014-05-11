@@ -4,7 +4,7 @@
   <title><![CDATA[Category: apache | Andrew's Blog]]></title>
   <link href="http://andrew-home.github.io/blog/categories/apache/atom.xml" rel="self"/>
   <link href="http://andrew-home.github.io/"/>
-  <updated>2014-04-07T17:54:03+08:00</updated>
+  <updated>2014-05-11T23:24:44+08:00</updated>
   <id>http://andrew-home.github.io/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
@@ -14,15 +14,143 @@
 
   
   <entry>
+    <title type="html"><![CDATA[apache安装及配置]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/"/>
+    <updated>2014-04-07T20:57:57+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi</id>
+    <content type="html"><![CDATA[<h1>安装apache</h1>
+
+<ol>
+<li>下载apache-2.4.3源码，解压到/usr/local/apache/httpd-2.4.3</li>
+<li>下载依赖包apr及apr-util，解压到/usr/local/apache/httpd-2.4.3/srclib/apr 及/usr/local/apache/srclib/apr-util</li>
+<li>下载pcre源码并安装到/usr/local/pcre</li>
+<li><p>在/usr/local/apache/httpd-2.4.3目录下执行命令</p>
+
+<pre><code> ./configure --prefix=/usr/local/apache --with-included-apr --with-pcre=/usr/local/pcre
+</code></pre></li>
+<li><p>执行命令make &amp;&amp; make install</p></li>
+</ol>
+
+
+<h1>cgi配置</h1>
+
+<p>首先需要在httpd.conf中取消<code>#LoadModule cgid_module modules/mod_cgid.so</code> 的注释。</p>
+
+<p>可以有两种方法指定cgi的目录</p>
+
+<ol>
+<li><p>将cgi程序放到指定目录（如/usr/local/apache/cgi-bin），然后在httpd.conf中添加</p>
+
+<pre><code> ScriptAlias /cgi-bin "/usr/local/apache/cgi-bin" 
+</code></pre>
+
+<p> 语句，但这时/usr/local/apache/cgi-bin中的静态文件（.html）将无法访问，会报Server Internal Error的错误，因为 ScriptAlias 是告诉apache 该目录下的都是script</p></li>
+<li><p>如果需要将cgi与静态文件一起放在一个文件夹（如 /usr/local/apache/www），则在httpd.conf中添加</p>
+
+<pre><code> Alias /www "/usr/local/apache/www"
+ &lt;Directory "/usr/local/apache/www"&gt;
+     AllowOverride None
+     Options ExecCGI
+     Require all granted #重要，否则报403错误
+     AddHandler cgi-script .cgi
+ &lt;/Directory&gt;
+</code></pre>
+
+<p> 就可以让cgi及html都可以访问了</p></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[wsgi配置]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/"/>
+    <updated>2014-04-07T20:50:00+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi</id>
+    <content type="html"><![CDATA[<p>在/etc/apache2/sites-enabled/000-default 中添加如下配置</p>
+
+<p>```
+WSGIScriptAlias /wsgi-bin /usr/lib/wsgi-bin/index.py
+<Directory "/usr/lib/wsgi-bin"></p>
+
+<pre><code>Order allow,deny 
+Allow from all 
+</code></pre>
+
+<p></Directory>
+```</p>
+
+<p>WSGIScriptAlias 一句表示所有<code>http://XXX/wsgi-bin/</code>下的请求都由/usr/lib/wsgi-bin/index.py这个wsgi app处理。</p>
+
+<p>注意：如果写成 WSGIScriptAlias /wsgi-bin/  /usr/lib/wsgi-bin/index.py则表示仅 <code>http://XXX/wsgi-bin/</code> 这个url是由index.py处理，如果请求 <code>http://XXX/wsgi-bin/other</code> 则报404</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Django在apache中的配置]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/"/>
+    <updated>2014-04-07T20:45:40+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi</id>
+    <content type="html"><![CDATA[<p>apache配置文件（省略无关配置）：</p>
+
+<p>```
+<VirtualHost *:80></p>
+
+<pre><code>    WSGIDaemonProcess DjangoProject processes=2 threads=15 python-path=/home/andrew/hg_repo/Django
+
+    WSGIProcessGroup DjangoProject 
+    Alias /static/js/ /home/andrew/hg_repo/Django/DjangoProject/static/js/
+    Alias /static/css/ /home/andrew/hg_repo/Django/DjangoProject/static/css/ 
+
+    WSGIScriptAlias / /home/andrew/hg_repo/Django/DjangoProject/wsgi.py
+    #WSGIPythonPath /home/andrew/hg_repo/Django
+    &lt;Directory "/home/andrew/hg_repo/Django/DjangoProject"&gt;
+       Order allow,deny 
+       Allow from all 
+    &lt;/Directory&gt;
+</code></pre>
+
+<p></VirtualHost>
+```</p>
+
+<p>这里让mod_wsgi工作在daemon模式下（官方推荐），python-path表明项目包的路径。WSGIPythonPath 一项在VirtualHost 内不能使用，只能放到httpd.conf中，作用与python-path相同。</p>
+
+<p>注意 Alias /static/js/及css要放在WSGIScriptAlias前面，让静态文件给apache先处理。</p>
+
+<p>另外，如果django的settings.py中把Debug设为了False,必须修改以下配置：</p>
+
+<p>```</p>
+
+<h1>Hosts/domain names that are valid for this site; required if DEBUG is False</h1>
+
+<h1>See <a href="https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts">https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts</a></h1>
+
+<p>ALLOWED_HOSTS = []
+<code>
+改为
+</code>
+ALLOWED_HOSTS = [”*“]
+```</p>
+
+<p>当然，TIME_ZONE的值也应当首先改为'Asia/Shanghai' （没有北京的）</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Apache配置文件中的deny和allow的使用]]></title>
     <link href="http://andrew-home.github.io/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/"/>
     <updated>2014-04-07T15:27:05+08:00</updated>
     <id>http://andrew-home.github.io/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong</id>
-    <content type="html"><![CDATA[<h1>使用情况总结</h1>
+    <content type="html"><![CDATA[<p>Order allow,deny # 这句话的作用是配置allow和deny的顺序，最后一个关键字代表默认策略，第一个圆<br/>
+Allow from all # allow规则，第二个圆<br/>
+deny from 192.9.200.69 # deny规则，第三个圆</p>
 
-<p>我们来看下下面的apache的一个配置，具体代码如下：</p>
+<!--more-->
 
-<p>```
+
+<p>
+我们来看下下面的apache的一个配置，具体代码如下：
+```
 <Directory "D:/TRS/Apache2.2.17/cgi-bin"></p>
 
 <pre><code>Order allow,deny  #1
@@ -33,73 +161,79 @@ deny from 192.9.200.69 #3
 <p></Directory>
 ```</p>
 
-<p>具体规律如下：
-1.  规律
-当我们看到一个apache的配置时，可以从下面的角度来理解。一默认，二顺序，三重叠。
-2.  上面配置说明
-[1] 一默认
-Order allow,deny ，这句话的作用是配置allow和deny的顺序，默认只有最后一个关键字起作用，这里起作用的关键字就是“deny”，默认拒绝所有请求。为了便于理解，我们可以画一个圆，圆的背景色涂上黑色，我们给这个圆起个编号，叫圆1。</p>
+<p>具体规律如下:</p>
 
-<p>[2] 二顺序
-由于上边的Order指出判断的顺序是先判断allow的规则，然后才是deny的规则。所以我们要先判断allow的请求，由于该请求中配置的是allow from all，
-所以表示该请求允许所有请求。这时我们再画一个圆，背景色涂上白色，我们给圆起个编号，叫圆2。
-我们再来看deny的判断规则，由于 deny from 192.9.200.69 ，表示拒绝来自ip地址为“192.9.200.69”，所以我们可以画出一块红色区域，表示“192.9.200.69”，我们把这块区域叫区域3。
-注意:即使把“Allow from all”写在“deny from 192.9.200.69”下面，依然是需要先判断allow规则，也就是说只有Order才能决定allow和order的优先顺序。</p>
+<ul>
+<li>规律</li>
+</ul>
 
-<p>[3] 三重叠
-我们把上边产生的圆1、圆2和区域3依次从下往上堆叠在一起。每个层都是不透明的，这时我们可以看到最终效果是除了“192.9.200.69”这块红色区域外，其他的所有都是白色区域。也就是只有“192.9.200.69”这个ip地址没有权限访问该目录，其他的请求都有权限访问该目录。</p>
+
+<p>当我们看到一个apache的配置时，可以从下面的角度来理解。一默认，二顺序，三重叠。</p>
+
+<ul>
+<li><p>上面配置说明</p>
+
+<ol>
+<li><p> 一默认</p>
+
+<p>  Order allow,deny ，这句话的作用是配置allow和deny的顺序，默认只有最后一个关键字起作用，这里起作用的关键字就是“deny”，默认拒绝所有请求。为了便于理解，我们可以画一个圆，圆的背景色涂上黑色，我们给这个圆起个编号，叫圆1。</p></li>
+<li><p> 二顺序</p>
+
+<p>  由于上边的Order指出判断的顺序是先判断allow的规则，然后才是deny的规则。所以我们要先判断allow的请求，由于该请求中配置的是allow from all，
+  所以表示该请求允许所有请求。这时我们再画一个圆，背景色涂上白色，我们给圆起个编号，叫圆2。</p>
+
+<p>  我们再来看deny的判断规则，由于 deny from 192.9.200.69 ，表示拒绝来自ip地址为“192.9.200.69”，所以我们可以画出一块红色区域，表示“192.9.200.69”，我们把这块区域叫区域3。</p>
+
+<p>  注意:即使把“Allow from all”写在“deny from 192.9.200.69”下面，依然是需要先判断allow规则，也就是说只有Order才能决定allow和order的优先顺序。</p></li>
+<li><p> 三重叠</p>
+
+<p>  我们把上边产生的圆1、圆2和区域3依次从下往上堆叠在一起。每个层都是不透明的，这时我们可以看到最终效果是除了“192.9.200.69”这块红色区域外，其他的所有都是白色区域。也就是只有“192.9.200.69”这个ip地址没有权限访问该目录，其他的请求都有权限访问该目录。</p></li>
+</ol>
+</li>
+</ul>
+
 
 <h1>看看下面的例子</h1>
 
 <p>也许上边没有说明白，我们再来看下面的例子，每个配置后面都有简单的说明，配置文件中的“#”号后边的数字表示配置项起作用的先后顺序。</p>
 
 <ol>
-<li>只允许192.9.200.69请求访问目录</li>
+<li><p>只允许192.9.200.69请求访问目录</p>
+
+<pre><code> &lt;Directory "D:/TRS/Apache2.2.17/cgi-bin"&gt;
+ Order deny,allow #1.默认允许全部请求
+ Allow from 192.9.200.69 #3.重叠，允许IP192.9.200.69的请求
+ deny from all #2.按照顺序，先判断deny规则，拒绝所有请求
+ &lt;/Directory&gt;
+</code></pre></li>
+<li><p>允许所有请求访问目录</p>
+
+<pre><code> &lt;Directory "D:/TRS/Apache2.2.17/cgi-bin"&gt;
+ Order deny,allow #1.默认允许全部请求
+ Allow from all #3.重叠，允许所有请求
+ deny from 192.9.200.69 #2.按照顺序，先判断deny规则，拒绝192.9.200.69的请求
+ &lt;/Directory&gt;
+</code></pre></li>
+<li><p>拒绝所有请求访问目录</p>
+
+<pre><code> &lt;Directory "D:/TRS/Apache2.2.17/cgi-bin"&gt;
+ Order allow,deny #1.默认拒绝全部请求
+ Allow from 192.9.200.69 #2.顺序，允许 192.9.200.69请求
+ deny from  all#3.重叠，拒绝所有请求
+ &lt;/Directory&gt;
+</code></pre></li>
+<li><p>除了192.9.200.69的请求外，其他请求都可以访问目录</p>
+
+<pre><code> &lt;Directory "D:/TRS/Apache2.2.17/cgi-bin"&gt;
+ Order allow,deny #1.默认拒绝全部请求
+ deny from  192.9.200.69#3.重叠，拒绝192.9.200.69请求
+ Allow from all #2.顺序，允许所有请求
+ &lt;/Directory&gt;
+</code></pre></li>
 </ol>
 
 
-<p><code>linenos:false mark:3
-&lt;Directory "D:/TRS/Apache2.2.17/cgi-bin"&gt;
-   Order deny,allow #1.默认允许全部请求
-Allow from 192.9.200.69 #3.重叠，允许IP192.9.200.69的请求
-deny from all #2.按照顺序，先判断deny规则，拒绝所有请求
-&lt;/Directory&gt;
-</code></p>
-
-<ol>
-<li>允许所有请求访问目录</li>
-</ol>
-
-
-<p><Directory "D:/TRS/Apache2.2.17/cgi-bin">
-Order deny,allow #1.默认允许全部请求
-Allow from all #3.重叠，允许所有请求
-deny from 192.9.200.69 #2.按照顺序，先判断deny规则，拒绝192.9.200.69的请求
-</Directory></p>
-
-<ol>
-<li>拒绝所有请求访问目录</li>
-</ol>
-
-
-<p><Directory "D:/TRS/Apache2.2.17/cgi-bin">
-Order allow,deny #1.默认拒绝全部请求
-Allow from 192.9.200.69 #2.顺序，允许 192.9.200.69请求
-deny from  all#3.重叠，拒绝所有请求
-</Directory></p>
-
-<ol>
-<li>除了192.9.200.69的请求外，其他请求都可以访问目录</li>
-</ol>
-
-
-<p><Directory "D:/TRS/Apache2.2.17/cgi-bin">
-Order allow,deny #1.默认拒绝全部请求
-deny from  192.9.200.69#3.重叠，拒绝192.9.200.69请求
-Allow from all #2.顺序，允许所有请求
-</Directory></p>
-
-<p>转自：(<a href="http://blog.csdn.net/wgw335363240/article/details/6362418">http://blog.csdn.net/wgw335363240/article/details/6362418</a>)</p>
+<p>转自：<a href="http://blog.csdn.net/wgw335363240/article/details/6362418">http://blog.csdn.net/wgw335363240/article/details/6362418</a></p>
 ]]></content>
   </entry>
   

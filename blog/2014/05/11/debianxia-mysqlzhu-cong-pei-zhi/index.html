@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Categories - Andrew's Blog</title>
+  <title>debian下mysql主从配置 - Andrew's Blog</title>
   <meta name="author" content="Andrew">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andrew-home.github.io/blog/categories/">
+  <link rel="canonical" href="http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -90,51 +90,17 @@ $(document).bind('DOMNodeInserted', function(event) {
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Categories</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time></p>
-  </header>
-  
-  <ul>
-
-    <li><a href="/blog/categories/test1/">Test1</a> [ 2 ]</li>
-
-    <li><a href="/blog/categories/test2/">Test2</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/apache/">Apache</a> [ 4 ]</li>
-
-    <li><a href="/blog/categories/git/">Git</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/awk/">Awk</a> [ 7 ]</li>
-
-    <li><a href="/blog/categories/debian/">Debian</a> [ 5 ]</li>
-
-    <li><a href="/blog/categories/mysql/">Mysql</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/linux/">Linux</a> [ 1 ]</li>
-
-</ul>
-
-
-  
-    <footer>
+    
+      
+        <h1 class="entry-title">Debian下mysql主从配置</h1>
+      
+    
+    
       <p class="meta">
         
-        
 
 
 
@@ -146,12 +112,110 @@ $(document).bind('DOMNodeInserted', function(event) {
   
 
 
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time>
+<time datetime="2014-05-11T22:44:26+08:00" pubdate data-updated="true">May 11<span>th</span>, 2014</time>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><ol>
+<li><p>确保master/slave只有一份/etc/mysql/my.cnf , 不要在其他地方再有my.cnf （如/etc/my.cnf  /usr/local之类）</p></li>
+<li><p>配置文件</p>
+
+<p> master配置：</p>
+
+<p> 在[mysqld]节点下添加：</p>
+
+<pre><code> server-id=1
+</code></pre>
+
+<p> slave配置：</p>
+
+<p> 在[mysqld]节点下添加：</p>
+
+<pre><code> server-id=2
+ relay-log = /home/mysql/logs/mysqld-relay-bin
+ relay-log-index = /home/mysql/logs/mysqld-relay-bin.index
+ replicate-ignore-db=mysql
+ replicate-ignore-db=test
+</code></pre></li>
+<li><p>先后重启master、slave的mysql： /etc/init.d/mysql restart</p></li>
+<li><p>在master上用root登陆mysql: mysql -uroot -p</p></li>
+<li><p>master上锁表：</p>
+
+<pre><code> mysql&gt; flush tables with read lock;
+</code></pre></li>
+<li><p>show master status; 记录binlog的名字和位置</p></li>
+<li><p>slave是登陆mysql，然后：</p>
+
+<pre><code> mysql&gt; slave stop;
+ mysql&gt; CHANGE MASTER TO MASTER_HOST='X.X.X.X',MASTER_USER='slave',MASTER_PASSWORD='fai',MASTER_LOG_FILE='mysqld-bin.000015',MASTER_LOG_POS=106;
+ mysql&gt; slave start;
+ mysql&gt; show slave status\G;
+</code></pre></li>
+<li><p>master上解锁：</p>
+
+<pre><code> mysql&gt; unlock tables;
+</code></pre></li>
+</ol>
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/'>http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/</a><br/>
+            </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
       
-    </footer>
   
+
+<span class="byline author vcard">Posted by <span class="fn">Andrew</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-11T22:44:26+08:00" pubdate data-updated="true">May 11<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/debian/'>debian</a>, <a class='category' href='/blog/categories/mysql/'>mysql</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/04/07/awkcheng-xu-jie-shao/" title="Previous Post: awk程序介绍">&laquo; awk程序介绍</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/" title="Next Post: 在64位的linux上运行32位的程序">在64位的linux上运行32位的程序 &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
 
 </div>

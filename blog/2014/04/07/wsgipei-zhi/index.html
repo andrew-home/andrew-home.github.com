@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Categories - Andrew's Blog</title>
+  <title>wsgi配置 - Andrew's Blog</title>
   <meta name="author" content="Andrew">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andrew-home.github.io/blog/categories/">
+  <link rel="canonical" href="http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -90,51 +90,17 @@ $(document).bind('DOMNodeInserted', function(event) {
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Categories</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time></p>
-  </header>
-  
-  <ul>
-
-    <li><a href="/blog/categories/test1/">Test1</a> [ 2 ]</li>
-
-    <li><a href="/blog/categories/test2/">Test2</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/apache/">Apache</a> [ 4 ]</li>
-
-    <li><a href="/blog/categories/git/">Git</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/awk/">Awk</a> [ 7 ]</li>
-
-    <li><a href="/blog/categories/debian/">Debian</a> [ 5 ]</li>
-
-    <li><a href="/blog/categories/mysql/">Mysql</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/linux/">Linux</a> [ 1 ]</li>
-
-</ul>
-
-
-  
-    <footer>
+    
+      
+        <h1 class="entry-title">Wsgi配置</h1>
+      
+    
+    
       <p class="meta">
         
-        
 
 
 
@@ -146,12 +112,81 @@ $(document).bind('DOMNodeInserted', function(event) {
   
 
 
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time>
+<time datetime="2014-04-07T20:50:00+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>在/etc/apache2/sites-enabled/000-default 中添加如下配置</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>WSGIScriptAlias /wsgi-bin /usr/lib/wsgi-bin/index.py
+</div><div class='line'>&lt;Directory "/usr/lib/wsgi-bin"> 
+</div><div class='line'>    Order allow,deny 
+</div><div class='line'>    Allow from all 
+</div><div class='line'>&lt;/Directory></div></pre></td></tr></table></div></figure>
+
+
+<p>WSGIScriptAlias 一句表示所有<code>http://XXX/wsgi-bin/</code>下的请求都由/usr/lib/wsgi-bin/index.py这个wsgi app处理。</p>
+
+<p>注意：如果写成 WSGIScriptAlias /wsgi-bin/  /usr/lib/wsgi-bin/index.py则表示仅 <code>http://XXX/wsgi-bin/</code> 这个url是由index.py处理，如果请求 <code>http://XXX/wsgi-bin/other</code> 则报404</p>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/'>http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/</a><br/>
+            </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
       
-    </footer>
   
+
+<span class="byline author vcard">Posted by <span class="fn">Andrew</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-07T20:50:00+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/apache/'>apache</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/" title="Previous Post: Django在apache中的配置">&laquo; Django在apache中的配置</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/" title="Next Post: apache安装及配置">apache安装及配置 &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
 
 </div>

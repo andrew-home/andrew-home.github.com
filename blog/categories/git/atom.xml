@@ -4,7 +4,7 @@
   <title><![CDATA[Category: git | Andrew's Blog]]></title>
   <link href="http://andrew-home.github.io/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://andrew-home.github.io/"/>
-  <updated>2014-04-07T17:54:03+08:00</updated>
+  <updated>2014-05-11T23:24:44+08:00</updated>
   <id>http://andrew-home.github.io/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
@@ -40,7 +40,12 @@ blog-source
 ├── source -&gt; theme/source
 └── theme
 </code>
-theme 是另外一个repo，用于维护博客样式的变更，采用subtree的形式包含在blog-source这个repo里。在第一次添加theme子目录时，用的命令如下：</p>
+theme 是另外一个repo，用于维护博客样式的变更，采用subtree的形式包含在blog-source这个repo里。</p>
+
+<!--more-->
+
+
+<p>在第一次添加theme子目录时，用的命令如下：</p>
 
 <p><code>mark:3
 语法：git remote add -f &lt;子仓库名&gt; &lt;子仓库地址&gt;

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: linux | Andrew's Blog]]></title>
+  <link href="http://andrew-home.github.io/blog/categories/linux/atom.xml" rel="self"/>
+  <link href="http://andrew-home.github.io/"/>
+  <updated>2014-05-11T23:24:44+08:00</updated>
+  <id>http://andrew-home.github.io/</id>
+  <author>
+    <name><![CDATA[Andrew]]></name>
+    <email><![CDATA[gzdujunchao@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[在64位的linux上运行32位的程序]]></title>
+    <link href="http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/"/>
+    <updated>2014-05-11T22:49:25+08:00</updated>
+    <id>http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>症状</p>
+
+<ul>
+<li>执行bin文件时提示：No such file or directory</li>
+<li>ldd bin文件  的输出为： not a dynamic executable</li>
+<li>file bin文件 的输出显示程序是32位</li>
+</ul>
+</li>
+<li><p>解决</p>
+
+<p> debian上只要安装 ia32-libs这个包（apt-get install ia32-libs)就可以了。</p></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+</feed>

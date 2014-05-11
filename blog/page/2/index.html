@@ -1,0 +1,949 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Andrew's Blog</title>
+  <meta name="author" content="Andrew">
+
+  
+  <meta name="description" content="Andrew's Blog">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://andrew-home.github.io/blog/page/2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Andrew's Blog" type="application/atom+xml">
+  <!--
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  
+
+  -->
+  <!-- 
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+-->
+<script type="text/javascript">
+
+function addBlankTargetForLinks () {
+  $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+  });
+}
+
+$(document).bind('DOMNodeInserted', function(event) {
+  addBlankTargetForLinks();
+});
+
+</script>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+    <!--
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">sihugh</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+    -->
+    <img src="/images/head.png" height="120px"></img>
+  </div>
+  <h1><a href="/">Andrew's Blog</a></h1>
+  
+    <h2>不管去哪里,出发最重要.</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://google.com.hk/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:andrew-home.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/07/awkpai-xu/">Awk排序</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-07T21:20:40+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>无序输出</h1>
+
+<p>由于awk数组，是关联数组。for…in循环输出时候，默认打印出来是无序数组。</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$awk</span> <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">    info = &quot;this is a test&quot;;</span>
+</div><div class='line'><span class="s1">    split(info,tA,&quot; &quot;);</span>
+</div><div class='line'><span class="s1">    for(k in tA){print k,tA[k];}</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div><div class='line'>4 <span class="nb">test</span>
+</div><div class='line'>1 this
+</div><div class='line'>2 is
+</div><div class='line'>3 a
+</div></pre></td></tr></table></div></figure>
+
+
+<h1>键值定位方式输出</h1>
+
+<p>如果需要按照顺序输出，通过键值定位方式输出。</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$awk</span> <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">    info = &quot;this is a test&quot;;</span>
+</div><div class='line'><span class="s1">    slen=split(info,tA,&quot; &quot;);</span>
+</div><div class='line'><span class="s1">    for(i=1;i&lt;=slen;i++){print i,tA[i];}</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div><div class='line'>1 this
+</div><div class='line'>2 is
+</div><div class='line'>3 a
+</div><div class='line'>4 <span class="nb">test</span>
+</div></pre></td></tr></table></div></figure>
+
+
+<h1>通过使用内置函数asort,asorti排序（awk 3.1以上版本才支持）</h1>
+
+<h2>asort</h2>
+
+<h3>使用说明</h3>
+
+<p>srcarrlen=asort[srcarr,dscarr]<br/>
+默认返回值是：原数组长度，传入参数dscarr则将排序后数组赋值给dscarr.</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$ </span>awk <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">    a[100]=100;</span>
+</div><div class='line'><span class="s1">    a[2]=224;</span>
+</div><div class='line'><span class="s1">    a[3]=34;</span>
+</div><div class='line'><span class="s1">    slen=asort(a,tA);</span>
+</div><div class='line'><span class="s1">    for(i=1;i&lt;=slen;i++)</span>
+</div><div class='line'><span class="s1">    {print i,tA[i];}</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div><div class='line'>1 34
+</div><div class='line'>2 100
+</div><div class='line'>3 224
+</div></pre></td></tr></table></div></figure>
+
+
+<p>asort只对值进行了排序，因此丢掉原先键值。</p>
+
+<h2>asorti</h2>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$awk</span> <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">    a[&quot;d&quot;]=100;</span>
+</div><div class='line'><span class="s1">    a[&quot;a&quot;]=224;</span>
+</div><div class='line'><span class="s1">    a[&quot;c&quot;]=34;</span>
+</div><div class='line'><span class="s1">    slen=asorti(a,tA);</span>
+</div><div class='line'><span class="s1">    for(i=1;i&lt;=slen;i++)</span>
+</div><div class='line'><span class="s1">    {print i,tA[i],a[tA[i]];}</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div><div class='line'>1 a 224
+</div><div class='line'>2 c 34
+</div><div class='line'>3 d 100
+</div></pre></td></tr></table></div></figure>
+
+
+<p>asorti对键值进行排序（字符串类型），将生成新的数组放入：tA中。</p>
+
+<h1>通过管道发送到sort排序</h1>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$awk</span> <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">    a[100]=100;</span>
+</div><div class='line'><span class="s1">    a[2]=224;</span>
+</div><div class='line'><span class="s1">    a[3]=34;</span>
+</div><div class='line'><span class="s1">    for(i in a)</span>
+</div><div class='line'><span class="s1">    {print i,a[i] | &quot;sort -r -n -k2&quot;;}</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div><div class='line'>2 224
+</div><div class='line'>100 100
+</div><div class='line'>3 34
+</div></pre></td></tr></table></div></figure>
+
+
+<p>通过管道，发送到外部程序“sort”排序，-r 从大到小，-n 按照数字排序，-k2 以第2列排序。通过将数据丢给第3方的sort命令，所有问题变得非常简单。如果以key值排序 –k2 变成 -k1即可。</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$ </span>awk <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">    a[100]=100;</span>
+</div><div class='line'><span class="s1">    a[2]=224;</span>
+</div><div class='line'><span class="s1">    a[3]=34;</span>
+</div><div class='line'><span class="s1">    for(i in a)</span>
+</div><div class='line'><span class="s1">    {print i,a[i] | &quot;sort -r -n -k1&quot;;}</span>
+</div><div class='line'><span class="s1">}&#39;</span>
+</div><div class='line'>100 100
+</div><div class='line'>3 34
+</div><div class='line'>2 224
+</div></pre></td></tr></table></div></figure>
+
+
+<h1>自定义排序函数</h1>
+
+<h2>awk自定义函数结构</h2>
+
+<figure class='code'><figcaption>lineons:true</figcaption><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered sh'><pre><div class='line'><span class="k">function </span>funname<span class="o">(</span>p1,p2,p3<span class="o">)</span>
+</div><div class='line'><span class="o">{</span>
+</div><div class='line'>    station;
+</div><div class='line'>    <span class="k">return </span>value;
+</div><div class='line'><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+
+<p>以上是awk自定义函数表示方式，默认传入参数都是以引用方式传入，return值，只能是字符型或者数值型。 不能返回数组类型。 如果返回数组类型。需要通过形参方式传入，再获得。</p>
+
+<h2>awk返回数组类型</h2>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div><div data-line='12' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'>awk <span class="s1">&#39;function test(ary){</span>
+</div><div class='line'><span class="s1">        for(i=0;i&lt;10;i++){</span>
+</div><div class='line'><span class="s1">            ary[i]=i;</span>
+</div><div class='line'><span class="s1">        }</span>
+</div><div class='line'><span class="s1">        return i;</span>
+</div><div class='line'><span class="s1">    }</span>
+</div><div class='line'><span class="s1">    BEGIN{</span>
+</div><div class='line'><span class="s1">        n=test(array);</span>
+</div><div class='line'><span class="s1">        for(i=0;i&lt;n;i++){</span>
+</div><div class='line'><span class="s1">            print array[i];</span>
+</div><div class='line'><span class="s1">        }</span>
+</div><div class='line'><span class="s1">    }&#39;</span>
+</div></pre></td></tr></table></div></figure>
+
+
+<h2>排序函数</h2>
+
+<ul>
+<li>arr 传入一维数组</li>
+<li>key 排序类型 1是按照值排序 2按照键值</li>
+<li>datatype 比较类型 1按照数字排序 2按照字符串排序</li>
+<li>tarr 排序返回的数组</li>
+<li>splitseq 分割字符串 数组中键与值之间分割字符串</li>
+<li>return 数组长度</li>
+</ul>
+
+
+<p>实现思路，将原始数组a[‘a’]=100 排序后变成 a[1]=a分隔符100 ，然后按照下标递归显示内容。 本排序使用冒泡方式进行。</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div><div data-line='12' class='line-number'></div><div data-line='13' class='line-number'></div><div data-line='14' class='line-number'></div><div data-line='15' class='line-number'></div><div data-line='16' class='line-number'></div><div data-line='17' class='line-number'></div><div data-line='18' class='line-number'></div><div data-line='19' class='line-number'></div><div data-line='20' class='line-number'></div><div data-line='21' class='line-number'></div><div data-line='22' class='line-number'></div><div data-line='23' class='line-number'></div><div data-line='24' class='line-number'></div><div data-line='25' class='line-number'></div><div data-line='26' class='line-number'></div><div data-line='27' class='line-number'></div><div data-line='28' class='line-number'></div><div data-line='29' class='line-number'></div><div data-line='30' class='line-number'></div><div data-line='31' class='line-number'></div><div data-line='32' class='line-number'></div><div data-line='33' class='line-number'></div><div data-line='34' class='line-number'></div><div data-line='35' class='line-number'></div><div data-line='36' class='line-number'></div><div data-line='37' class='line-number'></div><div data-line='38' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="k">function </span>sortArr<span class="o">(</span>arr,key,datatype,tarr,splitseq<span class="o">)</span>
+</div><div class='line'><span class="o">{</span>
+</div><div class='line'> </div><div class='line'>    <span class="k">if</span><span class="o">(</span>key ~ /<span class="o">[</span>^1-2<span class="o">]</span>/<span class="o">)</span>
+</div><div class='line'>    <span class="o">{</span><span class="k">return </span>tarr;<span class="o">}</span>
+</div><div class='line'>    <span class="k">for</span><span class="o">(</span>k in arr<span class="o">)</span>
+</div><div class='line'>    <span class="o">{</span>
+</div><div class='line'>      tarr<span class="o">[</span>++alen<span class="o">]=(</span>k<span class="s2">&quot;&quot;</span>splitseq<span class="s2">&quot;&quot;</span>arr<span class="o">[</span>k<span class="o">])</span>;
+</div><div class='line'>    <span class="o">}</span>
+</div><div class='line'> </div><div class='line'>    <span class="k">for</span><span class="o">(</span><span class="nv">m</span><span class="o">=</span>1;m&lt;<span class="o">=</span>alen;m++<span class="o">)</span>
+</div><div class='line'>    <span class="o">{</span>
+</div><div class='line'>        <span class="k">for</span><span class="o">(</span><span class="nv">n</span><span class="o">=</span>1;n&lt;<span class="o">=</span>alen-m-1;n++<span class="o">)</span>
+</div><div class='line'>        <span class="o">{</span>
+</div><div class='line'>            split<span class="o">(</span>tarr<span class="o">[</span>m<span class="o">]</span>,tm,splitseq<span class="o">)</span>;
+</div><div class='line'>            split<span class="o">(</span>tarr<span class="o">[</span>n+1<span class="o">]</span>,tn,splitseq<span class="o">)</span>;
+</div><div class='line'> </div><div class='line'>                <span class="nv">tnum</span><span class="o">=</span>tarr<span class="o">[</span>m<span class="o">]</span>;
+</div><div class='line'>            <span class="k">if</span><span class="o">(</span><span class="nv">datatype</span><span class="o">==</span>1<span class="o">)</span>
+</div><div class='line'>            <span class="o">{</span>
+</div><div class='line'>                <span class="k">if</span><span class="o">(</span>tm<span class="o">[</span>key<span class="o">]</span>+0&lt;tn<span class="o">[</span>key<span class="o">]</span>+0<span class="o">)</span>
+</div><div class='line'>                <span class="o">{</span>
+</div><div class='line'>                     tarr<span class="o">[</span>m<span class="o">]=</span>tarr<span class="o">[</span>n+1<span class="o">]</span>;
+</div><div class='line'>                     tarr<span class="o">[</span>n+1<span class="o">]=</span>tnum;
+</div><div class='line'>                <span class="o">}</span>
+</div><div class='line'>            <span class="o">}</span>
+</div><div class='line'>            <span class="k">else</span>
+</div><div class='line'>            <span class="o">{</span>
+</div><div class='line'>                <span class="k">if</span><span class="o">((</span>tm<span class="o">[</span>key<span class="o">]</span><span class="s2">&quot;&quot;</span><span class="o">)</span> &lt; <span class="o">(</span>tn<span class="o">[</span>key<span class="o">]</span><span class="s2">&quot;&quot;</span><span class="o">))</span>
+</div><div class='line'>                <span class="o">{</span>
+</div><div class='line'>                     tarr<span class="o">[</span>m<span class="o">]=</span>tarr<span class="o">[</span>n+1<span class="o">]</span>;
+</div><div class='line'>                     tarr<span class="o">[</span>n+1<span class="o">]=</span>tnum;
+</div><div class='line'>                <span class="o">}</span>
+</div><div class='line'>            <span class="o">}</span>
+</div><div class='line'>        <span class="o">}</span>
+</div><div class='line'>    <span class="o">}</span>
+</div><div class='line'>    <span class="k">return </span>alen;
+</div><div class='line'><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+
+<p>完整代码如下：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='line-numbers' aria-hidden='true'><pre><div data-line='1' class='line-number'></div><div data-line='2' class='line-number'></div><div data-line='3' class='line-number'></div><div data-line='4' class='line-number'></div><div data-line='5' class='line-number'></div><div data-line='6' class='line-number'></div><div data-line='7' class='line-number'></div><div data-line='8' class='line-number'></div><div data-line='9' class='line-number'></div><div data-line='10' class='line-number'></div><div data-line='11' class='line-number'></div><div data-line='12' class='line-number'></div><div data-line='13' class='line-number'></div><div data-line='14' class='line-number'></div><div data-line='15' class='line-number'></div><div data-line='16' class='line-number'></div><div data-line='17' class='line-number'></div><div data-line='18' class='line-number'></div><div data-line='19' class='line-number'></div><div data-line='20' class='line-number'></div><div data-line='21' class='line-number'></div><div data-line='22' class='line-number'></div><div data-line='23' class='line-number'></div><div data-line='24' class='line-number'></div><div data-line='25' class='line-number'></div><div data-line='26' class='line-number'></div><div data-line='27' class='line-number'></div><div data-line='28' class='line-number'></div><div data-line='29' class='line-number'></div><div data-line='30' class='line-number'></div><div data-line='31' class='line-number'></div><div data-line='32' class='line-number'></div><div data-line='33' class='line-number'></div><div data-line='34' class='line-number'></div><div data-line='35' class='line-number'></div><div data-line='36' class='line-number'></div><div data-line='37' class='line-number'></div><div data-line='38' class='line-number'></div><div data-line='39' class='line-number'></div><div data-line='40' class='line-number'></div><div data-line='41' class='line-number'></div><div data-line='42' class='line-number'></div><div data-line='43' class='line-number'></div><div data-line='44' class='line-number'></div><div data-line='45' class='line-number'></div><div data-line='46' class='line-number'></div><div data-line='47' class='line-number'></div><div data-line='48' class='line-number'></div><div data-line='49' class='line-number'></div><div data-line='50' class='line-number'></div><div data-line='51' class='line-number'></div><div data-line='52' class='line-number'></div><div data-line='53' class='line-number'></div><div data-line='54' class='line-number'></div><div data-line='55' class='line-number'></div></pre></td><td class='main  sh'><pre><div class='line'><span class="nv">$ </span>awk <span class="s1">&#39;BEGIN{</span>
+</div><div class='line'><span class="s1">a[&quot;a&quot;]=100;</span>
+</div><div class='line'><span class="s1">a[&quot;b&quot;]=110;</span>
+</div><div class='line'><span class="s1">a[&quot;c&quot;]=10;</span>
+</div><div class='line'><span class="s1">splitseq=&quot;%%&quot;;</span>
+</div><div class='line'><span class="s1">alen=sortArr(a,2,1,tarr,splitseq);</span>
+</div><div class='line'><span class="s1">for(m=1;m&lt;=alen;m++)</span>
+</div><div class='line'><span class="s1">{</span>
+</div><div class='line'><span class="s1">    split(tarr[m],ta,splitseq);</span>
+</div><div class='line'><span class="s1">    print m,ta[1],ta[2];</span>
+</div><div class='line'><span class="s1">}</span>
+</div><div class='line'><span class="s1">}</span>
+</div><div class='line'><span class="s1">function sortArr(arr,key,datatype,tarr,splitseq)</span>
+</div><div class='line'><span class="s1">{</span>
+</div><div class='line'> </div><div class='line'><span class="s1">    if(key ~ /[^1-2]/) </span>
+</div><div class='line'><span class="s1">    {return tarr;}</span>
+</div><div class='line'><span class="s1">    for(k in arr)</span>
+</div><div class='line'><span class="s1">    {</span>
+</div><div class='line'><span class="s1">      tarr[++alen]=(k&quot;&quot;splitseq&quot;&quot;arr[k]);</span>
+</div><div class='line'><span class="s1">    }</span>
+</div><div class='line'> </div><div class='line'><span class="s1">    for(m=1;m&lt;=alen;m++)</span>
+</div><div class='line'><span class="s1">    {</span>
+</div><div class='line'><span class="s1">        for(n=1;n&lt;=alen-m-1;n++)</span>
+</div><div class='line'><span class="s1">        {</span>
+</div><div class='line'><span class="s1">            split(tarr[m],tm,splitseq);</span>
+</div><div class='line'><span class="s1">            split(tarr[n+1],tn,splitseq);</span>
+</div><div class='line'> </div><div class='line'><span class="s1">                tnum=tarr[m];</span>
+</div><div class='line'><span class="s1">            if(datatype==1)</span>
+</div><div class='line'><span class="s1">            {</span>
+</div><div class='line'><span class="s1">                if(tm[key]+0&lt;tn[key]+0)</span>
+</div><div class='line'><span class="s1">                {</span>
+</div><div class='line'><span class="s1">                     tarr[m]=tarr[n+1];</span>
+</div><div class='line'><span class="s1">                     tarr[n+1]=tnum;</span>
+</div><div class='line'><span class="s1">                }</span>
+</div><div class='line'><span class="s1">            }</span>
+</div><div class='line'><span class="s1">            else</span>
+</div><div class='line'><span class="s1">            {</span>
+</div><div class='line'><span class="s1">                if((tm[key]&quot;&quot;) &lt; (tn[key]&quot;&quot;))</span>
+</div><div class='line'><span class="s1">                {</span>
+</div><div class='line'><span class="s1">                     tarr[m]=tarr[n+1];</span>
+</div><div class='line'><span class="s1">                     tarr[n+1]=tnum;</span>
+</div><div class='line'><span class="s1">                }</span>
+</div><div class='line'><span class="s1">            }</span>
+</div><div class='line'><span class="s1">        }</span>
+</div><div class='line'><span class="s1">    }</span>
+</div><div class='line'><span class="s1">    return alen;</span>
+</div><div class='line'><span class="s1">}</span>
+</div><div class='line'><span class="s1">&#39;</span>
+</div><div class='line'> </div><div class='line'>1 b 110
+</div><div class='line'>2 a 100
+</div><div class='line'>3 c 10
+</div></pre></td></tr></table></div></figure>
+
+
+<h1>总结</h1>
+
+<p>以上是awk数组排序一些方法。对于少量数据排序，就性能而言，使用自定义函数性能要高，不需要另外再开启进程。对于大量数据，排序第2种方法还是很不错的。</p>
+
+<p>转自<a href="http://www.cnblogs.com/chengmo/archive/2010/10/09/1846696.html">http://www.cnblogs.com/chengmo/archive/2010/10/09/1846696.html</a></p>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/awkpai-xu/'>http://andrew-home.github.io/blog/2014/04/07/awkpai-xu/</a><br/>
+            </p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/">Awk 修改 Shell 变量方法</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-07T21:09:55+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ol>
+<li><p>使用文件重定向：</p>
+
+<pre><code> #!/bin/bash 
+
+ var=1
+ awk 'BEGIN {print 2&gt;"tmp"}'
+ var=$( cat tmp ) 
+</code></pre></li>
+<li><p>使用eval</p>
+
+<pre><code> #!/bin/bash
+
+ eval $(awk 'BEGIN {print "var=2"}')
+ echo $var
+</code></pre></li>
+</ol>
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/'>http://andrew-home.github.io/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/</a><br/>
+            </p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/">Apache安装及配置</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-07T20:57:57+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>安装apache</h1>
+
+<ol>
+<li>下载apache-2.4.3源码，解压到/usr/local/apache/httpd-2.4.3</li>
+<li>下载依赖包apr及apr-util，解压到/usr/local/apache/httpd-2.4.3/srclib/apr 及/usr/local/apache/srclib/apr-util</li>
+<li>下载pcre源码并安装到/usr/local/pcre</li>
+<li><p>在/usr/local/apache/httpd-2.4.3目录下执行命令</p>
+
+<pre><code> ./configure --prefix=/usr/local/apache --with-included-apr --with-pcre=/usr/local/pcre
+</code></pre></li>
+<li><p>执行命令make &amp;&amp; make install</p></li>
+</ol>
+
+
+<h1>cgi配置</h1>
+
+<p>首先需要在httpd.conf中取消<code>#LoadModule cgid_module modules/mod_cgid.so</code> 的注释。</p>
+
+<p>可以有两种方法指定cgi的目录</p>
+
+<ol>
+<li><p>将cgi程序放到指定目录（如/usr/local/apache/cgi-bin），然后在httpd.conf中添加</p>
+
+<pre><code> ScriptAlias /cgi-bin "/usr/local/apache/cgi-bin" 
+</code></pre>
+
+<p> 语句，但这时/usr/local/apache/cgi-bin中的静态文件（.html）将无法访问，会报Server Internal Error的错误，因为 ScriptAlias 是告诉apache 该目录下的都是script</p></li>
+<li><p>如果需要将cgi与静态文件一起放在一个文件夹（如 /usr/local/apache/www），则在httpd.conf中添加</p>
+
+<pre><code> Alias /www "/usr/local/apache/www"
+ &lt;Directory "/usr/local/apache/www"&gt;
+     AllowOverride None
+     Options ExecCGI
+     Require all granted #重要，否则报403错误
+     AddHandler cgi-script .cgi
+ &lt;/Directory&gt;
+</code></pre>
+
+<p> 就可以让cgi及html都可以访问了</p></li>
+</ol>
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/'>http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/</a><br/>
+            </p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/07/wsgipei-zhi/">Wsgi配置</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-07T20:50:00+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在/etc/apache2/sites-enabled/000-default 中添加如下配置</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>WSGIScriptAlias /wsgi-bin /usr/lib/wsgi-bin/index.py
+</div><div class='line'>&lt;Directory "/usr/lib/wsgi-bin"> 
+</div><div class='line'>    Order allow,deny 
+</div><div class='line'>    Allow from all 
+</div><div class='line'>&lt;/Directory></div></pre></td></tr></table></div></figure>
+
+
+<p>WSGIScriptAlias 一句表示所有<code>http://XXX/wsgi-bin/</code>下的请求都由/usr/lib/wsgi-bin/index.py这个wsgi app处理。</p>
+
+<p>注意：如果写成 WSGIScriptAlias /wsgi-bin/  /usr/lib/wsgi-bin/index.py则表示仅 <code>http://XXX/wsgi-bin/</code> 这个url是由index.py处理，如果请求 <code>http://XXX/wsgi-bin/other</code> 则报404</p>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/'>http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/</a><br/>
+            </p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/">Django在apache中的配置</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-07T20:45:40+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>apache配置文件（省略无关配置）：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>&lt;VirtualHost *:80> 
+</div><div class='line'>        WSGIDaemonProcess DjangoProject processes=2 threads=15 python-path=/home/andrew/hg_repo/Django
+</div><div class='line'> </div><div class='line'>        WSGIProcessGroup DjangoProject 
+</div><div class='line'>        Alias /static/js/ /home/andrew/hg_repo/Django/DjangoProject/static/js/
+</div><div class='line'>        Alias /static/css/ /home/andrew/hg_repo/Django/DjangoProject/static/css/ 
+</div><div class='line'> </div><div class='line'>        WSGIScriptAlias / /home/andrew/hg_repo/Django/DjangoProject/wsgi.py
+</div><div class='line'>        #WSGIPythonPath /home/andrew/hg_repo/Django
+</div><div class='line'>        &lt;Directory "/home/andrew/hg_repo/Django/DjangoProject">
+</div><div class='line'>           Order allow,deny 
+</div><div class='line'>           Allow from all 
+</div><div class='line'>        &lt;/Directory>
+</div><div class='line'>&lt;/VirtualHost> </div></pre></td></tr></table></div></figure>
+
+
+<p>这里让mod_wsgi工作在daemon模式下（官方推荐），python-path表明项目包的路径。WSGIPythonPath 一项在VirtualHost 内不能使用，只能放到httpd.conf中，作用与python-path相同。</p>
+
+<p>注意 Alias /static/js/及css要放在WSGIScriptAlias前面，让静态文件给apache先处理。</p>
+
+<p>另外，如果django的settings.py中把Debug设为了False,必须修改以下配置：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'># Hosts/domain names that are valid for this site; required if DEBUG is False
+</div><div class='line'># See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts 
+</div><div class='line'> </div><div class='line'>ALLOWED_HOSTS = []</div></pre></td></tr></table></div></figure>
+
+
+<p>改为</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>ALLOWED_HOSTS = [”*“]</div></pre></td></tr></table></div></figure>
+
+
+<p>当然，TIME_ZONE的值也应当首先改为&#8217;Asia/Shanghai&#8217; （没有北京的）</p>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/'>http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/</a><br/>
+            </p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/">使用git Subtree管理本博客</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-07T16:49:18+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>背景</h1>
+
+<p>以下是本博客源码的目录结构</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>blog-source
+</div><div class='line'>├── CHANGELOG.markdown
+</div><div class='line'>├── Gemfile
+</div><div class='line'>├── Gemfile.lock
+</div><div class='line'>├── README.markdown
+</div><div class='line'>├── README.md
+</div><div class='line'>├── Rakefile
+</div><div class='line'>├── _config.yml
+</div><div class='line'>├── _deploy
+</div><div class='line'>├── config.rb
+</div><div class='line'>├── config.ru
+</div><div class='line'>├── plugins
+</div><div class='line'>├── public
+</div><div class='line marked start'>├── sass -> theme/sass
+</div><div class='line marked end'>├── source -> theme/source
+</div><div class='line'>└── theme</div></pre></td></tr></table></div></figure>
+
+
+<p>theme 是另外一个repo，用于维护博客样式的变更，采用subtree的形式包含在blog-source这个repo里。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/">Apache配置文件中的deny和allow的使用</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-07T15:27:05+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Order allow,deny # 这句话的作用是配置allow和deny的顺序，最后一个关键字代表默认策略，第一个圆<br/>
+Allow from all # allow规则，第二个圆<br/>
+deny from 192.9.200.69 # deny规则，第三个圆</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/02/08/zhong-wen-biao-ti/">中文标题</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-08T20:39:27+08:00" pubdate data-updated="true">Feb 8<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>english
+1
+2
+3</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/02/08/zhong-wen-biao-ti/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/02/08/hello-world/">Hello World</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-08T03:38:02+08:00" pubdate data-updated="true">Feb 8<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Wa hahaha</p>
+
+<figure class='code'><figcaption>Discover if a number is prime </figcaption><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered ruby'><pre><div class='line'> <span class="k">class</span> <span class="nc">Fixnum</span>
+</div><div class='line'>   <span class="k">def</span> <span class="nf">prime?</span>
+</div><div class='line'>     <span class="p">(</span><span class="s1">&#39;1&#39;</span> <span class="o">*</span> <span class="nb">self</span><span class="p">)</span> <span class="o">!~</span> <span class="sr">/^1?$|^(11+?)\1+$/</span>
+</div><div class='line'>   <span class="k">end</span>
+</div><div class='line'> <span class="k">end</span>
+</div></pre></td></tr></table></div></figure>
+
+
+
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/02/08/hello-world/'>http://andrew-home.github.io/blog/2014/02/08/hello-world/</a><br/>
+            </p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/apache/'>apache (4)</a></li>
+<li class='category'><a href='/blog/categories/awk/'>awk (7)</a></li>
+<li class='category'><a href='/blog/categories/debian/'>debian (5)</a></li>
+<li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/linux/'>linux (1)</a></li>
+<li class='category'><a href='/blog/categories/mysql/'>mysql (1)</a></li>
+<li class='category'><a href='/blog/categories/test1/'>test1 (2)</a></li>
+<li class='category'><a href='/blog/categories/test2/'>test2 (1)</a></li>
+
+  </ul>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/05/11/gre-tunnelda-jian/">Gre Tunnel搭建</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/11/sshdeng-lu-shi-bai/">Ssh登陆失败</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/11/ssh-an-zhuang-bi-ji/">Ssh 安装笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/">在64位的linux上运行32位的程序</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/">Debian下mysql主从配置</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Andrew -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

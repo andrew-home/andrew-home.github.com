@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Categories - Andrew's Blog</title>
+  <title>Django在apache中的配置 - Andrew's Blog</title>
   <meta name="author" content="Andrew">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://andrew-home.github.io/blog/categories/">
+  <link rel="canonical" href="http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -90,51 +90,17 @@ $(document).bind('DOMNodeInserted', function(event) {
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Categories</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time></p>
-  </header>
-  
-  <ul>
-
-    <li><a href="/blog/categories/test1/">Test1</a> [ 2 ]</li>
-
-    <li><a href="/blog/categories/test2/">Test2</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/apache/">Apache</a> [ 4 ]</li>
-
-    <li><a href="/blog/categories/git/">Git</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/awk/">Awk</a> [ 7 ]</li>
-
-    <li><a href="/blog/categories/debian/">Debian</a> [ 5 ]</li>
-
-    <li><a href="/blog/categories/mysql/">Mysql</a> [ 1 ]</li>
-
-    <li><a href="/blog/categories/linux/">Linux</a> [ 1 ]</li>
-
-</ul>
-
-
-  
-    <footer>
+    
+      
+        <h1 class="entry-title">Django在apache中的配置</h1>
+      
+    
+    
       <p class="meta">
         
-        
 
 
 
@@ -146,12 +112,102 @@ $(document).bind('DOMNodeInserted', function(event) {
   
 
 
-<time datetime="2013-07-28T23:11:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2013</time>
+<time datetime="2014-04-07T20:45:40+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>apache配置文件（省略无关配置）：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>&lt;VirtualHost *:80> 
+</div><div class='line'>        WSGIDaemonProcess DjangoProject processes=2 threads=15 python-path=/home/andrew/hg_repo/Django
+</div><div class='line'> </div><div class='line'>        WSGIProcessGroup DjangoProject 
+</div><div class='line'>        Alias /static/js/ /home/andrew/hg_repo/Django/DjangoProject/static/js/
+</div><div class='line'>        Alias /static/css/ /home/andrew/hg_repo/Django/DjangoProject/static/css/ 
+</div><div class='line'> </div><div class='line'>        WSGIScriptAlias / /home/andrew/hg_repo/Django/DjangoProject/wsgi.py
+</div><div class='line'>        #WSGIPythonPath /home/andrew/hg_repo/Django
+</div><div class='line'>        &lt;Directory "/home/andrew/hg_repo/Django/DjangoProject">
+</div><div class='line'>           Order allow,deny 
+</div><div class='line'>           Allow from all 
+</div><div class='line'>        &lt;/Directory>
+</div><div class='line'>&lt;/VirtualHost> </div></pre></td></tr></table></div></figure>
+
+
+<p>这里让mod_wsgi工作在daemon模式下（官方推荐），python-path表明项目包的路径。WSGIPythonPath 一项在VirtualHost 内不能使用，只能放到httpd.conf中，作用与python-path相同。</p>
+
+<p>注意 Alias /static/js/及css要放在WSGIScriptAlias前面，让静态文件给apache先处理。</p>
+
+<p>另外，如果django的settings.py中把Debug设为了False,必须修改以下配置：</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'># Hosts/domain names that are valid for this site; required if DEBUG is False
+</div><div class='line'># See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts 
+</div><div class='line'> </div><div class='line'>ALLOWED_HOSTS = []</div></pre></td></tr></table></div></figure>
+
+
+<p>改为</p>
+
+<figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>ALLOWED_HOSTS = [”*“]</div></pre></td></tr></table></div></figure>
+
+
+<p>当然，TIME_ZONE的值也应当首先改为&#8217;Asia/Shanghai&#8217; （没有北京的）</p>
+
+<p class='post-footer'>
+            本文地址:
+            <a href='http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/'>http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/</a><br/>
+            </p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
       
-    </footer>
   
+
+<span class="byline author vcard">Posted by <span class="fn">Andrew</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-07T20:45:40+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/apache/'>apache</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/" title="Previous Post: 使用git subtree管理本博客">&laquo; 使用git subtree管理本博客</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/blog/2014/04/07/wsgipei-zhi/" title="Next Post: wsgi配置">wsgi配置 &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
 
 </div>

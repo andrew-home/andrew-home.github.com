@@ -12,13 +12,81 @@
         <loc>
             http://andrew-home.github.io/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/
         </loc>
-        <lastmod>2014-04-07T15:33:00+08:00</lastmod>
+        <lastmod>2014-04-07T20:41:00+08:00</lastmod>
     </url>
     <url>
         <loc>
             http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/
         </loc>
-        <lastmod>2014-04-07T17:54:03+08:00</lastmod>
+        <lastmod>2014-04-07T20:42:31+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/</loc>
+        <lastmod>2014-04-07T20:49:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/</loc>
+        <lastmod>2014-04-07T20:52:58+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/</loc>
+        <lastmod>2014-04-07T21:07:18+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://andrew-home.github.io/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/
+        </loc>
+        <lastmod>2014-04-07T21:19:34+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://andrew-home.github.io/blog/2014/04/07/awkpai-xu/</loc>
+        <lastmod>2014-04-07T22:13:26+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://andrew-home.github.io/blog/2014/04/07/awkshu-zu/</loc>
+        <lastmod>2014-04-07T21:56:37+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://andrew-home.github.io/blog/2014/04/07/awkshu-zi-bi-jiao/</loc>
+        <lastmod>2014-04-07T22:02:02+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/
+        </loc>
+        <lastmod>2014-04-07T22:05:49+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/
+        </loc>
+        <lastmod>2014-04-07T22:19:49+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://andrew-home.github.io/blog/2014/04/07/awkcheng-xu-jie-shao/</loc>
+        <lastmod>2014-04-07T22:26:48+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/</loc>
+        <lastmod>2014-05-11T22:51:38+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/
+        </loc>
+        <lastmod>2014-05-11T22:51:43+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji/</loc>
+        <lastmod>2014-05-11T22:54:24+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai/</loc>
+        <lastmod>2014-05-11T22:57:10+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian/</loc>
+        <lastmod>2014-05-11T23:24:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://andrew-home.github.io/404.html</loc>
@@ -26,7 +94,7 @@
     </url>
     <url>
         <loc>http://andrew-home.github.io/blog/archives/</loc>
-        <lastmod>2014-04-07T17:54:03+08:00</lastmod>
+        <lastmod>2014-05-11T23:24:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://andrew-home.github.io/blog/categories/</loc>
@@ -34,7 +102,7 @@
     </url>
     <url>
         <loc>http://andrew-home.github.io/</loc>
-        <lastmod>2014-04-07T17:54:03+08:00</lastmod>
+        <lastmod>2014-05-11T23:24:43+08:00</lastmod>
     </url>
     <url>
         <loc>http://andrew-home.github.io/robots.txt</loc>
