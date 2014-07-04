@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Andrew's Blog]]></title>
-  <link href="http://andrew-home.github.io/atom.xml" rel="self"/>
-  <link href="http://andrew-home.github.io/"/>
-  <updated>2014-06-25T11:47:25+08:00</updated>
-  <id>http://andrew-home.github.io/</id>
+  <link href="http://andrew.ga/atom.xml" rel="self"/>
+  <link href="http://andrew.ga/"/>
+  <updated>2014-07-04T20:56:57+08:00</updated>
+  <id>http://andrew.ga/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
     <email><![CDATA[gzdujunchao@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[gre tunnel搭建]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian/"/>
+    <link href="http://andrew.ga/blog/2014/05/11/gre-tunnelda-jian/"/>
     <updated>2014-05-11T23:00:00+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian</id>
+    <id>http://andrew.ga/blog/2014/05/11/gre-tunnelda-jian</id>
     <content type="html"><![CDATA[<p> 客户端（client）与服务器A在同一个运营商网络，应用部署在服务器B，服务器A 、B之间建立tunnel，A设置dnat，client通过访问A的8000端口来访问服务器B，B返回的响应通过tunnel到达A，A再返回给client。在dnat之上使用tunnel的原因是通过tunnel后，B接收到的请求源IP为client，而不是A。</p>
 
 <figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'> </div><div class='line'>+----------+          +------------------------+                +------------------------+
@@ -120,7 +120,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian/'>http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian/</a><br/>
+            <a href='http://andrew.ga/blog/2014/05/11/gre-tunnelda-jian/'>http://andrew.ga/blog/2014/05/11/gre-tunnelda-jian/</a><br/>
             </p>
 
 ]]></content>
@@ -128,9 +128,9 @@
   
   <entry>
     <title type="html"><![CDATA[ssh登陆失败]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai/"/>
+    <link href="http://andrew.ga/blog/2014/05/11/sshdeng-lu-shi-bai/"/>
     <updated>2014-05-11T22:56:26+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai</id>
+    <id>http://andrew.ga/blog/2014/05/11/sshdeng-lu-shi-bai</id>
     <content type="html"><![CDATA[<p>用ssh key登陆不上某台机A的某个账号xy1，查看A的/var/log/messages，看到有这么句：</p>
 
 <figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>User xy1 not allowed because account is locked </div></pre></td></tr></table></div></figure>
@@ -146,7 +146,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai/'>http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai/</a><br/>
+            <a href='http://andrew.ga/blog/2014/05/11/sshdeng-lu-shi-bai/'>http://andrew.ga/blog/2014/05/11/sshdeng-lu-shi-bai/</a><br/>
             </p>
 
 ]]></content>
@@ -154,9 +154,9 @@
   
   <entry>
     <title type="html"><![CDATA[ssh 安装笔记]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji/"/>
+    <link href="http://andrew.ga/blog/2014/05/11/ssh-an-zhuang-bi-ji/"/>
     <updated>2014-05-11T22:52:32+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji</id>
+    <id>http://andrew.ga/blog/2014/05/11/ssh-an-zhuang-bi-ji</id>
     <content type="html"><![CDATA[<p>debian 6.0 的一台32位机器，使用<code>aptitude search openssh-server-x509</code>没结果（其他机同样源配置是有结果的），于是上内部源下载openssh-server-x509.deb，安装过程如下：</p>
 
 <ul>
@@ -177,7 +177,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji/'>http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji/</a><br/>
+            <a href='http://andrew.ga/blog/2014/05/11/ssh-an-zhuang-bi-ji/'>http://andrew.ga/blog/2014/05/11/ssh-an-zhuang-bi-ji/</a><br/>
             </p>
 
 ]]></content>
@@ -185,9 +185,9 @@
   
   <entry>
     <title type="html"><![CDATA[在64位的linux上运行32位的程序]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/"/>
+    <link href="http://andrew.ga/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/"/>
     <updated>2014-05-11T22:49:25+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu</id>
+    <id>http://andrew.ga/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu</id>
     <content type="html"><![CDATA[<ol>
 <li><p>症状</p>
 
@@ -205,7 +205,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/'>http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/</a><br/>
+            <a href='http://andrew.ga/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/'>http://andrew.ga/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/</a><br/>
             </p>
 
 ]]></content>
@@ -213,9 +213,9 @@
   
   <entry>
     <title type="html"><![CDATA[debian下mysql主从配置]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/"/>
+    <link href="http://andrew.ga/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/"/>
     <updated>2014-05-11T22:44:26+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi</id>
+    <id>http://andrew.ga/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi</id>
     <content type="html"><![CDATA[<ol>
 <li><p>确保master/slave只有一份/etc/mysql/my.cnf , 不要在其他地方再有my.cnf （如/etc/my.cnf  /usr/local之类）</p></li>
 <li><p>配置文件</p>
@@ -260,7 +260,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/'>http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/</a><br/>
+            <a href='http://andrew.ga/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/'>http://andrew.ga/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/</a><br/>
             </p>
 
 ]]></content>
@@ -268,14 +268,14 @@
   
   <entry>
     <title type="html"><![CDATA[awk程序介绍]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/awkcheng-xu-jie-shao/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/awkcheng-xu-jie-shao/"/>
     <updated>2014-04-07T22:22:31+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/awkcheng-xu-jie-shao</id>
-    <content type="html"><![CDATA[<p><a href="http://andrew-home.github.io/files/%E4%B8%AD%E7%A0%94%E9%99%A2%E8%AE%A1%E7%AE%97%E4%B8%AD%E5%BF%83ASPAC%E8%AE%A1%E5%88%92%E4%B9%8Bawk%E7%A8%8B%E5%BA%8F%E4%BB%8B%E7%BB%8D.pdf">中研院计算中心ASPAC计划之awk程序介绍.PDF</a></p>
+    <id>http://andrew.ga/blog/2014/04/07/awkcheng-xu-jie-shao</id>
+    <content type="html"><![CDATA[<p><a href="http://andrew.ga/files/%E4%B8%AD%E7%A0%94%E9%99%A2%E8%AE%A1%E7%AE%97%E4%B8%AD%E5%BF%83ASPAC%E8%AE%A1%E5%88%92%E4%B9%8Bawk%E7%A8%8B%E5%BA%8F%E4%BB%8B%E7%BB%8D.pdf">中研院计算中心ASPAC计划之awk程序介绍.PDF</a></p>
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/04/07/awkcheng-xu-jie-shao/'>http://andrew-home.github.io/blog/2014/04/07/awkcheng-xu-jie-shao/</a><br/>
+            <a href='http://andrew.ga/blog/2014/04/07/awkcheng-xu-jie-shao/'>http://andrew.ga/blog/2014/04/07/awkcheng-xu-jie-shao/</a><br/>
             </p>
 
 ]]></content>
@@ -283,9 +283,9 @@
   
   <entry>
     <title type="html"><![CDATA[awk调用shell命令的两种方法system与print]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/"/>
     <updated>2014-04-07T22:07:27+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print</id>
+    <id>http://andrew.ga/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print</id>
     <content type="html"><![CDATA[<p>awk获取执行shell命令后的结果：</p>
 
 <figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>awk 'BEGIN{
@@ -331,7 +331,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/'>http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/</a><br/>
+            <a href='http://andrew.ga/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/'>http://andrew.ga/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/</a><br/>
             </p>
 
 ]]></content>
@@ -339,9 +339,9 @@
   
   <entry>
     <title type="html"><![CDATA[awk 读取 shell 变量的方法]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/"/>
     <updated>2014-04-07T22:02:41+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa</id>
+    <id>http://andrew.ga/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa</id>
     <content type="html"><![CDATA[<ol>
 <li><p>在awk中用&#8221;&lsquo;$var&rsquo;&#8221;</p>
 
@@ -364,7 +364,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/'>http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/</a><br/>
+            <a href='http://andrew.ga/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/'>http://andrew.ga/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/</a><br/>
             </p>
 
 ]]></content>
@@ -372,9 +372,9 @@
   
   <entry>
     <title type="html"><![CDATA[awk数字比较]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/awkshu-zi-bi-jiao/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/awkshu-zi-bi-jiao/"/>
     <updated>2014-04-07T21:57:27+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/awkshu-zi-bi-jiao</id>
+    <id>http://andrew.ga/blog/2014/04/07/awkshu-zi-bi-jiao</id>
     <content type="html"><![CDATA[<h1>自动转换</h1>
 
 <p>awk中的变量是数字还是字符串会根据上下文转换，如：</p>
@@ -430,7 +430,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/04/07/awkshu-zi-bi-jiao/'>http://andrew-home.github.io/blog/2014/04/07/awkshu-zi-bi-jiao/</a><br/>
+            <a href='http://andrew.ga/blog/2014/04/07/awkshu-zi-bi-jiao/'>http://andrew.ga/blog/2014/04/07/awkshu-zi-bi-jiao/</a><br/>
             </p>
 
 ]]></content>
@@ -438,9 +438,9 @@
   
   <entry>
     <title type="html"><![CDATA[awk数组]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/awkshu-zu/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/awkshu-zu/"/>
     <updated>2014-04-07T21:55:22+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/awkshu-zu</id>
+    <id>http://andrew.ga/blog/2014/04/07/awkshu-zu</id>
     <content type="html"><![CDATA[<p>1.采用 for (val in Array) print Array[val] 的方法得到的遍历是无序的，即使下标val是1、2、3&hellip;.</p>
 
 <p>2.获得数组个数的方法</p>
@@ -462,7 +462,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/04/07/awkshu-zu/'>http://andrew-home.github.io/blog/2014/04/07/awkshu-zu/</a><br/>
+            <a href='http://andrew.ga/blog/2014/04/07/awkshu-zu/'>http://andrew.ga/blog/2014/04/07/awkshu-zu/</a><br/>
             </p>
 
 ]]></content>
@@ -470,9 +470,9 @@
   
   <entry>
     <title type="html"><![CDATA[awk排序]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/awkpai-xu/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/awkpai-xu/"/>
     <updated>2014-04-07T21:20:40+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/awkpai-xu</id>
+    <id>http://andrew.ga/blog/2014/04/07/awkpai-xu</id>
     <content type="html"><![CDATA[<h1>无序输出</h1>
 
 <p>由于awk数组，是关联数组。for…in循环输出时候，默认打印出来是无序数组。</p>
@@ -725,7 +725,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/04/07/awkpai-xu/'>http://andrew-home.github.io/blog/2014/04/07/awkpai-xu/</a><br/>
+            <a href='http://andrew.ga/blog/2014/04/07/awkpai-xu/'>http://andrew.ga/blog/2014/04/07/awkpai-xu/</a><br/>
             </p>
 
 ]]></content>
@@ -733,9 +733,9 @@
   
   <entry>
     <title type="html"><![CDATA[awk 修改 shell 变量方法]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/"/>
     <updated>2014-04-07T21:09:55+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa</id>
+    <id>http://andrew.ga/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa</id>
     <content type="html"><![CDATA[<ol>
 <li><p>使用文件重定向：</p>
 
@@ -757,7 +757,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/'>http://andrew-home.github.io/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/</a><br/>
+            <a href='http://andrew.ga/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/'>http://andrew.ga/blog/2014/04/07/awk-xiu-gai-shell-bian-liang-fang-fa/</a><br/>
             </p>
 
 ]]></content>
@@ -765,9 +765,9 @@
   
   <entry>
     <title type="html"><![CDATA[apache安装及配置]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/"/>
     <updated>2014-04-07T20:57:57+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi</id>
+    <id>http://andrew.ga/blog/2014/04/07/apachean-zhuang-ji-pei-zhi</id>
     <content type="html"><![CDATA[<h1>安装apache</h1>
 
 <ol>
@@ -812,7 +812,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/'>http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/</a><br/>
+            <a href='http://andrew.ga/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/'>http://andrew.ga/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/</a><br/>
             </p>
 
 ]]></content>
@@ -820,9 +820,9 @@
   
   <entry>
     <title type="html"><![CDATA[wsgi配置]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/wsgipei-zhi/"/>
     <updated>2014-04-07T20:50:00+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi</id>
+    <id>http://andrew.ga/blog/2014/04/07/wsgipei-zhi</id>
     <content type="html"><![CDATA[<p>在/etc/apache2/sites-enabled/000-default 中添加如下配置</p>
 
 <figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>WSGIScriptAlias /wsgi-bin /usr/lib/wsgi-bin/index.py
@@ -838,7 +838,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/'>http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/</a><br/>
+            <a href='http://andrew.ga/blog/2014/04/07/wsgipei-zhi/'>http://andrew.ga/blog/2014/04/07/wsgipei-zhi/</a><br/>
             </p>
 
 ]]></content>
@@ -846,9 +846,9 @@
   
   <entry>
     <title type="html"><![CDATA[Django在apache中的配置]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/"/>
     <updated>2014-04-07T20:45:40+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi</id>
+    <id>http://andrew.ga/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi</id>
     <content type="html"><![CDATA[<p>apache配置文件（省略无关配置）：</p>
 
 <figure class='code'><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered plain'><pre><div class='line'>&lt;VirtualHost *:80> 
@@ -885,7 +885,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/'>http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/</a><br/>
+            <a href='http://andrew.ga/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/'>http://andrew.ga/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/</a><br/>
             </p>
 
 ]]></content>
@@ -893,9 +893,9 @@
   
   <entry>
     <title type="html"><![CDATA[使用git subtree管理本博客]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/"/>
     <updated>2014-04-07T16:49:18+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke</id>
+    <id>http://andrew.ga/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke</id>
     <content type="html"><![CDATA[<h1>背景</h1>
 
 <p>以下是本博客源码的目录结构</p>
@@ -978,7 +978,7 @@
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/'>http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/</a><br/>
+            <a href='http://andrew.ga/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/'>http://andrew.ga/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/</a><br/>
             </p>
 
 ]]></content>
@@ -986,9 +986,9 @@
   
   <entry>
     <title type="html"><![CDATA[Apache配置文件中的deny和allow的使用]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/"/>
     <updated>2014-04-07T15:27:05+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong</id>
+    <id>http://andrew.ga/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong</id>
     <content type="html"><![CDATA[<p>Order allow,deny # 这句话的作用是配置allow和deny的顺序，最后一个关键字代表默认策略，第一个圆<br/>
 Allow from all # allow规则，第二个圆<br/>
 deny from 192.9.200.69 # deny规则，第三个圆</p>
@@ -1082,7 +1082,7 @@ deny from 192.9.200.69 # deny规则，第三个圆</p>
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/'>http://andrew-home.github.io/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/</a><br/>
+            <a href='http://andrew.ga/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/'>http://andrew.ga/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/</a><br/>
             </p>
 
 ]]></content>
@@ -1090,9 +1090,9 @@ deny from 192.9.200.69 # deny规则，第三个圆</p>
   
   <entry>
     <title type="html"><![CDATA[中文标题]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/02/08/zhong-wen-biao-ti/"/>
+    <link href="http://andrew.ga/blog/2014/02/08/zhong-wen-biao-ti/"/>
     <updated>2014-02-08T20:39:27+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/02/08/zhong-wen-biao-ti</id>
+    <id>http://andrew.ga/blog/2014/02/08/zhong-wen-biao-ti</id>
     <content type="html"><![CDATA[<p>english
 1
 2
@@ -1106,7 +1106,7 @@ deny from 192.9.200.69 # deny规则，第三个圆</p>
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/02/08/zhong-wen-biao-ti/'>http://andrew-home.github.io/blog/2014/02/08/zhong-wen-biao-ti/</a><br/>
+            <a href='http://andrew.ga/blog/2014/02/08/zhong-wen-biao-ti/'>http://andrew.ga/blog/2014/02/08/zhong-wen-biao-ti/</a><br/>
             </p>
 
 ]]></content>
@@ -1114,9 +1114,9 @@ deny from 192.9.200.69 # deny规则，第三个圆</p>
   
   <entry>
     <title type="html"><![CDATA[hello world]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/02/08/hello-world/"/>
+    <link href="http://andrew.ga/blog/2014/02/08/hello-world/"/>
     <updated>2014-02-08T03:38:02+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/02/08/hello-world</id>
+    <id>http://andrew.ga/blog/2014/02/08/hello-world</id>
     <content type="html"><![CDATA[<p>Wa hahaha</p>
 
 <figure class='code'><figcaption>Discover if a number is prime </figcaption><div class='highlight'><table style='width:100%'><tr><td class='main unnumbered ruby'><pre><div class='line'> <span class="k">class</span> <span class="nc">Fixnum</span>
@@ -1131,7 +1131,7 @@ deny from 192.9.200.69 # deny规则，第三个圆</p>
 
 <p class='post-footer'>
             本文地址:
-            <a href='http://andrew-home.github.io/blog/2014/02/08/hello-world/'>http://andrew-home.github.io/blog/2014/02/08/hello-world/</a><br/>
+            <a href='http://andrew.ga/blog/2014/02/08/hello-world/'>http://andrew.ga/blog/2014/02/08/hello-world/</a><br/>
             </p>
 
 ]]></content>

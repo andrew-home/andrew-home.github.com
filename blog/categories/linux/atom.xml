@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: linux | Andrew's Blog]]></title>
-  <link href="http://andrew-home.github.io/blog/categories/linux/atom.xml" rel="self"/>
-  <link href="http://andrew-home.github.io/"/>
-  <updated>2014-06-25T11:47:25+08:00</updated>
-  <id>http://andrew-home.github.io/</id>
+  <link href="http://andrew.ga/blog/categories/linux/atom.xml" rel="self"/>
+  <link href="http://andrew.ga/"/>
+  <updated>2014-07-04T20:56:57+08:00</updated>
+  <id>http://andrew.ga/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
     <email><![CDATA[gzdujunchao@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[在64位的linux上运行32位的程序]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/"/>
+    <link href="http://andrew.ga/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/"/>
     <updated>2014-05-11T22:49:25+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu</id>
+    <id>http://andrew.ga/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu</id>
     <content type="html"><![CDATA[<ol>
 <li><p>症状</p>
 

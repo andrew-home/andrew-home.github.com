@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: git | Andrew's Blog]]></title>
-  <link href="http://andrew-home.github.io/blog/categories/git/atom.xml" rel="self"/>
-  <link href="http://andrew-home.github.io/"/>
-  <updated>2014-06-25T11:47:25+08:00</updated>
-  <id>http://andrew-home.github.io/</id>
+  <link href="http://andrew.ga/blog/categories/git/atom.xml" rel="self"/>
+  <link href="http://andrew.ga/"/>
+  <updated>2014-07-04T20:56:57+08:00</updated>
+  <id>http://andrew.ga/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
     <email><![CDATA[gzdujunchao@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[使用git subtree管理本博客]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke/"/>
     <updated>2014-04-07T16:49:18+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke</id>
+    <id>http://andrew.ga/blog/2014/04/07/shi-yong-git-subtreeguan-li-ben-bo-ke</id>
     <content type="html"><![CDATA[<h1>背景</h1>
 
 <p>以下是本博客源码的目录结构</p>

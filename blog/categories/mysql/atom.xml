@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: mysql | Andrew's Blog]]></title>
-  <link href="http://andrew-home.github.io/blog/categories/mysql/atom.xml" rel="self"/>
-  <link href="http://andrew-home.github.io/"/>
-  <updated>2014-06-25T11:47:25+08:00</updated>
-  <id>http://andrew-home.github.io/</id>
+  <link href="http://andrew.ga/blog/categories/mysql/atom.xml" rel="self"/>
+  <link href="http://andrew.ga/"/>
+  <updated>2014-07-04T20:56:57+08:00</updated>
+  <id>http://andrew.ga/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
     <email><![CDATA[gzdujunchao@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[debian下mysql主从配置]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/"/>
+    <link href="http://andrew.ga/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/"/>
     <updated>2014-05-11T22:44:26+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi</id>
+    <id>http://andrew.ga/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi</id>
     <content type="html"><![CDATA[<ol>
 <li><p>确保master/slave只有一份/etc/mysql/my.cnf , 不要在其他地方再有my.cnf （如/etc/my.cnf  /usr/local之类）</p></li>
 <li><p>配置文件</p>

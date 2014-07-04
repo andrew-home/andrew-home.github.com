@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: apache | Andrew's Blog]]></title>
-  <link href="http://andrew-home.github.io/blog/categories/apache/atom.xml" rel="self"/>
-  <link href="http://andrew-home.github.io/"/>
-  <updated>2014-06-25T11:47:25+08:00</updated>
-  <id>http://andrew-home.github.io/</id>
+  <link href="http://andrew.ga/blog/categories/apache/atom.xml" rel="self"/>
+  <link href="http://andrew.ga/"/>
+  <updated>2014-07-04T20:56:57+08:00</updated>
+  <id>http://andrew.ga/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
     <email><![CDATA[gzdujunchao@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[apache安装及配置]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/apachean-zhuang-ji-pei-zhi/"/>
     <updated>2014-04-07T20:57:57+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/apachean-zhuang-ji-pei-zhi</id>
+    <id>http://andrew.ga/blog/2014/04/07/apachean-zhuang-ji-pei-zhi</id>
     <content type="html"><![CDATA[<h1>安装apache</h1>
 
 <ol>
@@ -64,9 +64,9 @@
   
   <entry>
     <title type="html"><![CDATA[wsgi配置]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/wsgipei-zhi/"/>
     <updated>2014-04-07T20:50:00+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/wsgipei-zhi</id>
+    <id>http://andrew.ga/blog/2014/04/07/wsgipei-zhi</id>
     <content type="html"><![CDATA[<p>在/etc/apache2/sites-enabled/000-default 中添加如下配置</p>
 
 <p>```
@@ -88,9 +88,9 @@ Allow from all
   
   <entry>
     <title type="html"><![CDATA[Django在apache中的配置]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi/"/>
     <updated>2014-04-07T20:45:40+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi</id>
+    <id>http://andrew.ga/blog/2014/04/07/djangozai-apachezhong-de-pei-zhi</id>
     <content type="html"><![CDATA[<p>apache配置文件（省略无关配置）：</p>
 
 <p>```
@@ -138,9 +138,9 @@ ALLOWED_HOSTS = [”*“]
   
   <entry>
     <title type="html"><![CDATA[Apache配置文件中的deny和allow的使用]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong/"/>
     <updated>2014-04-07T15:27:05+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong</id>
+    <id>http://andrew.ga/blog/2014/04/07/apachepei-zhi-wen-jian-zhong-de-denyhe-allowde-shi-yong</id>
     <content type="html"><![CDATA[<p>Order allow,deny # 这句话的作用是配置allow和deny的顺序，最后一个关键字代表默认策略，第一个圆<br/>
 Allow from all # allow规则，第二个圆<br/>
 deny from 192.9.200.69 # deny规则，第三个圆</p>

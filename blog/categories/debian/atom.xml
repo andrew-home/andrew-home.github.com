@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: debian | Andrew's Blog]]></title>
-  <link href="http://andrew-home.github.io/blog/categories/debian/atom.xml" rel="self"/>
-  <link href="http://andrew-home.github.io/"/>
-  <updated>2014-06-25T11:47:25+08:00</updated>
-  <id>http://andrew-home.github.io/</id>
+  <link href="http://andrew.ga/blog/categories/debian/atom.xml" rel="self"/>
+  <link href="http://andrew.ga/"/>
+  <updated>2014-07-04T20:56:57+08:00</updated>
+  <id>http://andrew.ga/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
     <email><![CDATA[gzdujunchao@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[gre tunnel搭建]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian/"/>
+    <link href="http://andrew.ga/blog/2014/05/11/gre-tunnelda-jian/"/>
     <updated>2014-05-11T23:00:00+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/05/11/gre-tunnelda-jian</id>
+    <id>http://andrew.ga/blog/2014/05/11/gre-tunnelda-jian</id>
     <content type="html"><![CDATA[<p> 客户端（client）与服务器A在同一个运营商网络，应用部署在服务器B，服务器A 、B之间建立tunnel，A设置dnat，client通过访问A的8000端口来访问服务器B，B返回的响应通过tunnel到达A，A再返回给client。在dnat之上使用tunnel的原因是通过tunnel后，B接收到的请求源IP为client，而不是A。</p>
 
 <p>```</p>
@@ -126,9 +126,9 @@
   
   <entry>
     <title type="html"><![CDATA[ssh登陆失败]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai/"/>
+    <link href="http://andrew.ga/blog/2014/05/11/sshdeng-lu-shi-bai/"/>
     <updated>2014-05-11T22:56:26+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/05/11/sshdeng-lu-shi-bai</id>
+    <id>http://andrew.ga/blog/2014/05/11/sshdeng-lu-shi-bai</id>
     <content type="html"><![CDATA[<p>用ssh key登陆不上某台机A的某个账号xy1，查看A的/var/log/messages，看到有这么句：
 <code>
 User xy1 not allowed because account is locked
@@ -143,9 +143,9 @@ usermod -p -u xy1
   
   <entry>
     <title type="html"><![CDATA[ssh 安装笔记]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji/"/>
+    <link href="http://andrew.ga/blog/2014/05/11/ssh-an-zhuang-bi-ji/"/>
     <updated>2014-05-11T22:52:32+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/05/11/ssh-an-zhuang-bi-ji</id>
+    <id>http://andrew.ga/blog/2014/05/11/ssh-an-zhuang-bi-ji</id>
     <content type="html"><![CDATA[<p>debian 6.0 的一台32位机器，使用<code>aptitude search openssh-server-x509</code>没结果（其他机同样源配置是有结果的），于是上内部源下载openssh-server-x509.deb，安装过程如下：</p>
 
 <ul>
@@ -168,9 +168,9 @@ usermod -p -u xy1
   
   <entry>
     <title type="html"><![CDATA[在64位的linux上运行32位的程序]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/"/>
+    <link href="http://andrew.ga/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu/"/>
     <updated>2014-05-11T22:49:25+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu</id>
+    <id>http://andrew.ga/blog/2014/05/11/zai-64wei-de-linuxshang-yun-xing-32wei-de-cheng-xu</id>
     <content type="html"><![CDATA[<ol>
 <li><p>症状</p>
 
@@ -190,9 +190,9 @@ usermod -p -u xy1
   
   <entry>
     <title type="html"><![CDATA[debian下mysql主从配置]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/"/>
+    <link href="http://andrew.ga/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi/"/>
     <updated>2014-05-11T22:44:26+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi</id>
+    <id>http://andrew.ga/blog/2014/05/11/debianxia-mysqlzhu-cong-pei-zhi</id>
     <content type="html"><![CDATA[<ol>
 <li><p>确保master/slave只有一份/etc/mysql/my.cnf , 不要在其他地方再有my.cnf （如/etc/my.cnf  /usr/local之类）</p></li>
 <li><p>配置文件</p>

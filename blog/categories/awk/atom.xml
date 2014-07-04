@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: awk | Andrew's Blog]]></title>
-  <link href="http://andrew-home.github.io/blog/categories/awk/atom.xml" rel="self"/>
-  <link href="http://andrew-home.github.io/"/>
-  <updated>2014-06-25T11:47:25+08:00</updated>
-  <id>http://andrew-home.github.io/</id>
+  <link href="http://andrew.ga/blog/categories/awk/atom.xml" rel="self"/>
+  <link href="http://andrew.ga/"/>
+  <updated>2014-07-04T20:56:57+08:00</updated>
+  <id>http://andrew.ga/</id>
   <author>
     <name><![CDATA[Andrew]]></name>
     <email><![CDATA[gzdujunchao@gmail.com]]></email>
@@ -15,18 +15,18 @@
   
   <entry>
     <title type="html"><![CDATA[awk程序介绍]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/awkcheng-xu-jie-shao/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/awkcheng-xu-jie-shao/"/>
     <updated>2014-04-07T22:22:31+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/awkcheng-xu-jie-shao</id>
+    <id>http://andrew.ga/blog/2014/04/07/awkcheng-xu-jie-shao</id>
     <content type="html"><![CDATA[<p><a href="/files/%E4%B8%AD%E7%A0%94%E9%99%A2%E8%AE%A1%E7%AE%97%E4%B8%AD%E5%BF%83ASPAC%E8%AE%A1%E5%88%92%E4%B9%8Bawk%E7%A8%8B%E5%BA%8F%E4%BB%8B%E7%BB%8D.pdf">中研院计算中心ASPAC计划之awk程序介绍.PDF</a></p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[awk调用shell命令的两种方法system与print]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print/"/>
     <updated>2014-04-07T22:07:27+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print</id>
+    <id>http://andrew.ga/blog/2014/04/07/awkdiao-yong-shellming-ling-de-liang-chong-fang-fa-systemyu-print</id>
     <content type="html"><![CDATA[<p>awk获取执行shell命令后的结果：
 <code>
 awk 'BEGIN{
@@ -71,9 +71,9 @@ awk 'BEGIN{
   
   <entry>
     <title type="html"><![CDATA[awk 读取 shell 变量的方法]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa/"/>
     <updated>2014-04-07T22:02:41+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa</id>
+    <id>http://andrew.ga/blog/2014/04/07/awk-du-qu-shell-bian-liang-de-fang-fa</id>
     <content type="html"><![CDATA[<ol>
 <li><p>在awk中用"&lsquo;$var&rsquo;"</p>
 
@@ -98,9 +98,9 @@ awk 'BEGIN{
   
   <entry>
     <title type="html"><![CDATA[awk数字比较]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/awkshu-zi-bi-jiao/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/awkshu-zi-bi-jiao/"/>
     <updated>2014-04-07T21:57:27+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/awkshu-zi-bi-jiao</id>
+    <id>http://andrew.ga/blog/2014/04/07/awkshu-zi-bi-jiao</id>
     <content type="html"><![CDATA[<h1>自动转换</h1>
 
 <p>awk中的变量是数字还是字符串会根据上下文转换，如：
@@ -173,9 +173,9 @@ if (aA-bA&gt;0) { print  aA+bA "bigger" }
   
   <entry>
     <title type="html"><![CDATA[awk数组]]></title>
-    <link href="http://andrew-home.github.io/blog/2014/04/07/awkshu-zu/"/>
+    <link href="http://andrew.ga/blog/2014/04/07/awkshu-zu/"/>
     <updated>2014-04-07T21:55:22+08:00</updated>
-    <id>http://andrew-home.github.io/blog/2014/04/07/awkshu-zu</id>
+    <id>http://andrew.ga/blog/2014/04/07/awkshu-zu</id>
     <content type="html"><![CDATA[<p>1.采用 for (val in Array) print Array[val] 的方法得到的遍历是无序的，即使下标val是1、2、3&hellip;.</p>
 
 <p>2.获得数组个数的方法</p>
