@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://andrew.ga/sitemap.xml 
+Sitemap: http://andrew-home.ga/sitemap.xml 
